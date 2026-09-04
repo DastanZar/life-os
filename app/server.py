@@ -142,6 +142,17 @@ class H(SimpleHTTPRequestHandler):
         self.send_response(code); self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b)
 
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "*")
+        self.send_header("Content-Security-Policy", "frame-ancestors *")
+        super().end_headers()
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.end_headers()
+
     def do_GET(self):
         if self.path.startswith("/api/health"):
             return self._json(200, {"ok": True, "models": MODELS, "memory": os.path.exists(CONVO)})
