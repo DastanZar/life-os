@@ -46,3 +46,25 @@ BAI_API_KEY=sk-... python3 server.py     # :8790, key only needed for the LLM co
 - `index.html` is deliberately one file — no framework, no build; edit + hard refresh
 - Every release: bump `CACHE` in `sw.js` (v1, v2, …) or phones keep the stale bundle
 - Tests: `/tmp/test-logic.js` + `/tmp/test-diary.js` run the JS under node with a DOM shim
+
+## Editing from anywhere (the sync loop)
+
+This repo is the source of truth for the code. A cron on the VPS pulls `main` every
+15 minutes; if `server.py` changed the coach server restarts, if `sw.js` changed
+installed PWAs self-update.
+
+**On your laptop (VS Code):**
+```bash
+git clone https://github.com/DastanZar/life-os.git
+```
+Edit → Source Control panel → Commit → **Sync Changes** (pull+push in one click).
+Always Sync *before* starting an editing session so you don't diverge.
+
+**In a browser, no install:** open this repo on github.com and press `.` — that's
+github.dev (full VS Code in-browser). Edit → commit → synced.
+
+**Through the agent:** ask in chat; changes get made, tested (51 tests), and pushed.
+Both paths land in the same place.
+
+Note: the repo holds *code only*. Diary entries, weight logs and coach memory live
+on the VPS/phone (localStorage + coach-memory/) and are intentionally not tracked.
