@@ -9,143 +9,179 @@
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#09090b; --bg2:#121215; --card:#18181b; --card2:#222226; --card-hover:#27272a;
-  --line:rgba(255,255,255,0.08); --line-subtle:rgba(255,255,255,0.04); --line-focus:rgba(255,107,0,0.4);
-  --txt:#f4f4f5; --txt2:#a1a1aa; --dim:#71717a;
-  --orange:#ff6b00; --orange2:#ff8533; --orange-glow:rgba(255,107,0,0.15);
-  --blue:#38bdf8; --blue2:#0284c7; --red:#f43f5e; --green:#10b981; --green-soft:rgba(16,185,129,0.12);
+  --bg:#090a0f; --bg2:#11141c; --card:#161a24; --card2:#1e2330; --card3:#262c3d; --card-hover:#242a3a;
+  --line:rgba(255,255,255,0.08); --line-subtle:rgba(255,255,255,0.04); --line-accent:rgba(255,107,0,0.35);
+  --txt:#ffffff; --txt2:#94a3b8; --dim:#64748b;
+  --orange:#ff6b00; --orange2:#ff8533; --orange-glow:rgba(255,107,0,0.2);
+  --blue:#38bdf8; --blue-glow:rgba(56,189,248,0.2);
+  --emerald:#10b981; --emerald-glow:rgba(16,185,129,0.2);
+  --purple:#a855f7; --purple-glow:rgba(168,85,247,0.2);
+  --rose:#f43f5e;
   --brand-gradient:linear-gradient(135deg, #ff6b00 0%, #ea580c 100%);
-  --hero-gradient:radial-gradient(ellipse at 80% 0%, rgba(255,107,0,0.18) 0%, rgba(24,24,27,0.95) 75%), #18181b;
-  --card-radius:18px; --btn-radius:14px; --chip-radius:10px;
+  --hero-gradient:radial-gradient(ellipse at 85% 0%, rgba(255,107,0,0.2) 0%, rgba(22,26,36,0.98) 75%), #161a24;
+  --card-radius:22px; --btn-radius:16px; --pill-radius:999px;
   font-size:15px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);color:var(--txt);font-family:'Satoshi',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.45;overscroll-behavior:none;scrollbar-width:none}
-body{max-width:440px;margin:0 auto;min-height:100vh;padding:0 0 96px;position:relative}
-header{position:sticky;top:0;z-index:25;background:rgba(9,9,11,0.85);padding:14px 18px 12px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line-subtle)}
+body{max-width:440px;margin:0 auto;min-height:100vh;padding:0 0 100px;position:relative}
+
+/* Uber & Stripe Header Elevation */
+header{position:sticky;top:0;z-index:30;background:rgba(9,10,15,0.85);padding:14px 18px 12px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--line-subtle)}
 .hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.hdate{font-family:'Clash Display',system-ui;font-size:1.55rem;font-weight:700;letter-spacing:-.4px;line-height:1.15;color:#fff}
-.hsub{color:var(--txt2);font-size:.76rem;margin-top:3px;font-weight:500;letter-spacing:0.1px}
+.hdate{font-family:'Clash Display',system-ui;font-size:1.35rem;font-weight:700;letter-spacing:-0.2px;line-height:1.2;color:#fff}
+.hsub{color:var(--txt2);font-size:.76rem;margin-top:4px;font-weight:500;letter-spacing:0.1px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{background:var(--card2);border:1px solid var(--line);border-radius:var(--chip-radius);padding:4px 10px;font-size:.72rem;font-weight:600;color:var(--txt);white-space:nowrap;letter-spacing:.2px;display:inline-flex;align-items:center;gap:4px}
-.chip.amber{color:#fbbf24;background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.2)}
-.chip.blue{color:#38bdf8;background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.2)}
-.chip.black{background:#000;color:#fff;border-color:var(--line)}
-.chip.fire{background:var(--orange-glow);border-color:rgba(255,107,0,0.3);color:var(--orange)}
-.chip.green{color:#34d399;background:var(--green-soft);border-color:rgba(16,185,129,0.25)}
+.chip{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:4px 10px;font-size:.72rem;font-weight:600;color:var(--txt);white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.chip.amber{color:#fbbf24;background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.25)}
+.chip.blue{color:#38bdf8;background:rgba(56,189,248,0.12);border-color:rgba(56,189,248,0.25)}
+.chip.fire{background:var(--orange-glow);border-color:rgba(255,107,0,0.35);color:var(--orange)}
+.chip.green{color:#34d399;background:var(--emerald-glow);border-color:rgba(16,185,129,0.3)}
 
-main{padding:10px 16px 24px}
+main{padding:12px 16px 24px}
 .screen{display:none} .screen.on{display:block}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--card-radius);padding:16px 18px;margin-bottom:14px;box-shadow:0 8px 24px -6px rgba(0,0,0,0.45);position:relative;overflow:hidden}
-.card h3{font-family:'Clash Display',system-ui;font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-bottom:14px;font-weight:600}
 
-.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:none}
-.row label{font-size:.88rem;color:var(--txt);font-weight:500;letter-spacing:-0.1px}
-.row .unit{color:var(--dim);font-size:.72rem;font-weight:400;margin-left:3px}
+/* Premium Card Architecture */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--card-radius);padding:18px 20px;margin-bottom:16px;box-shadow:0 12px 32px -8px rgba(0,0,0,0.5);position:relative;overflow:hidden}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.card-title{font-family:'Clash Display',system-ui;font-size:.78rem;text-transform:uppercase;letter-spacing:1.4px;color:var(--dim);font-weight:700}
+.card-subtitle{font-size:.72rem;color:var(--txt2);margin-top:2px;font-weight:500}
+.card-badge{font-size:.7rem;padding:3px 9px;border-radius:999px;font-weight:700}
 
-input[type=number],input[type=text],input[type=date],select{background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:9px 12px;font-size:.9rem;width:105px;text-align:center;font-family:inherit;font-variant-numeric:tabular-nums;outline:none;transition:border-color .15s,box-shadow .15s,background .15s}
-input:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-glow);background:#2c2c31}
-input.wide{width:100%}
+/* Hero Card */
+.hero{background:var(--hero-gradient);border:1px solid var(--line);border-radius:var(--card-radius);padding:20px 20px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 12px 32px -8px rgba(0,0,0,0.5)}
+.hero-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hero-tag{font-size:.68rem;font-weight:800;letter-spacing:1.2px;color:var(--orange);text-transform:uppercase}
+.hero-badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,107,0,0.15);color:var(--orange);border:1px solid rgba(255,107,0,0.3)}
+.hero h2{font-family:'Clash Display',system-ui;font-size:1.42rem;font-weight:700;line-height:1.2;letter-spacing:-.4px;color:#fff;margin-bottom:6px}
+.hero p{font-size:.84rem;color:var(--txt2);font-weight:500;margin-bottom:14px;line-height:1.4}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;font-size:.82rem;font-weight:700;color:var(--orange);background:rgba(255,107,0,0.12);border:1px solid rgba(255,107,0,0.3);padding:8px 14px;border-radius:12px;cursor:pointer;transition:all .15s}
+.hero-cta:active{transform:scale(0.96)}
 
-.btn{background:var(--brand-gradient);color:#fff;border:none;border-radius:var(--btn-radius);padding:11px 18px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.1px;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:transform .1s,opacity .15s,filter .15s;box-shadow:0 4px 14px rgba(255,107,0,0.25)}
-.btn:active{transform:scale(.97);filter:brightness(1.1)}
-.btn.ghost{background:var(--card2);border:1px solid var(--line);color:var(--txt);font-weight:500;box-shadow:none}
-.btn.ghost:hover{background:var(--card-hover)}
-.btn.sm{padding:7px 13px;font-size:.78rem;border-radius:10px}
-.btn.red{background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);color:var(--red);box-shadow:none}
-.btn.orange{background:var(--brand-gradient);color:#fff}
-
-.tog{border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:.78rem;background:var(--card2);color:var(--txt2);cursor:pointer;user-select:none;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
-.tog.on{border-color:var(--orange);color:#fff;background:var(--brand-gradient);font-weight:600;box-shadow:0 2px 8px rgba(255,107,0,0.28)}
-
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-
-.ringwrap{display:flex;align-items:center;gap:18px}
-.ring{position:relative;width:96px;height:96px;flex:none}
+/* MyFitnessPal / Cronometer Macro Dashboard */
+.macro-card{padding:18px 20px}
+.macro-dashboard{display:grid;grid-template-columns:116px 1fr;gap:18px;align-items:center;margin-top:10px}
+.macro-ring-box{display:flex;justify-content:center;align-items:center}
+.ring{position:relative;width:112px;height:112px;display:flex;align-items:center;justify-content:center}
 .ring svg{transform:rotate(-90deg)}
-.ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ring .val .big{font-family:'Clash Display',system-ui;font-weight:700;font-size:1.55rem;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
-.ring .val .small{font-size:.68rem;color:var(--txt2);font-weight:500;margin-top:2px}
+.ring .val{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.ring .val .big{font-family:'Clash Display',system-ui;font-size:1.4rem;font-weight:700;letter-spacing:-0.5px;color:#fff;line-height:1}
+.ring .val .small{font-size:.62rem;font-weight:700;letter-spacing:0.8px;color:var(--dim);text-transform:uppercase;margin-top:3px}
 
-.stat{display:flex;flex-direction:column;gap:2px}
-.stat b{font-family:'Clash Display',system-ui;font-size:1.25rem;font-variant-numeric:tabular-nums;color:#fff}
-.stat span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.macro-bars{display:flex;flex-direction:column;gap:11px}
+.bar-wrap{display:flex;flex-direction:column;gap:5px}
+.bar-meta{display:flex;justify-content:space-between;align-items:center;font-size:.74rem;font-weight:600}
+.bar-meta .name{color:var(--txt2);font-size:.74rem;font-weight:600;display:flex;align-items:center;gap:4px}
+.bar-meta .name .subtle{color:var(--dim);font-size:.68rem;font-weight:500}
+.bar-meta .val{color:#fff;font-variant-numeric:tabular-nums;font-size:.76rem}
+.bar-track{height:7px;border-radius:999px;background:var(--card2);overflow:hidden;border:1px solid var(--line-subtle)}
+.bar-fill{height:100%;border-radius:999px;transition:width 0.4s cubic-bezier(.22,1,.36,1)}
+.bar-fill.orange{background:var(--brand-gradient)}
+.bar-fill.blue{background:linear-gradient(90deg,#38bdf8,#0284c7)}
+.bar-fill.emerald{background:linear-gradient(90deg,#34d399,#059669)}
 
-.ex{border-bottom:1px solid var(--line);padding:13px 0}
-.ex:last-child{border-bottom:none}
-.ex .exname{font-size:.9rem;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#fff}
-.ex .extarget{font-size:.74rem;color:var(--txt2);margin:3px 0 8px;font-weight:400}
+/* Quick Macro Chips Row */
+.quick-macro-sec{margin-top:16px;padding-top:12px;border-top:1px solid var(--line-subtle)}
+.quick-sec-label{font-size:.68rem;font-weight:700;letter-spacing:1px;color:var(--dim);margin-bottom:8px;text-transform:uppercase}
+.chip-action{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:6px 11px;font-size:.75rem;color:var(--txt);font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.chip-action:hover{background:var(--card-hover);border-color:var(--orange)}
+.chip-action:active{transform:scale(0.95)}
+.chip-action.neg{border-color:rgba(244,63,94,0.3);color:var(--rose)}
 
-.setrow{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
-.setrow .s{font-size:.68rem;color:var(--dim);width:34px;font-weight:500;text-transform:uppercase}
-.setrow input{width:62px;padding:8px 6px;font-size:.82rem;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-family:inherit;text-align:center;color:#fff}
-.setrow input:focus{border-color:var(--orange)}
-.setrow .done{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--dim);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.setrow .done.on{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 10px rgba(16,185,129,0.3)}
+/* Metric Tiles 2x2 Grid (Daily Five) */
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric-tile{background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:14px 15px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;transition:border-color .15s}
+.metric-tile:focus-within{border-color:rgba(255,107,0,0.4)}
+.metric-top{display:flex;justify-content:space-between;align-items:center}
+.metric-label{font-size:.72rem;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.8px}
+.metric-icon{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.metric-body{display:flex;flex-direction:column;gap:3px}
+.metric-input-wrap{display:flex;align-items:baseline;gap:5px}
+.metric-input{background:transparent;border:none;color:#fff;font-family:'Clash Display',system-ui;font-size:1.45rem;font-weight:700;width:95px;outline:none;font-variant-numeric:tabular-nums;padding:0}
+.metric-input::placeholder{color:var(--card3)}
+.metric-unit{font-size:.75rem;color:var(--dim);font-weight:600}
+.metric-sub{font-size:.68rem;color:var(--dim);font-weight:500}
+.water-stepper{display:flex;gap:4px}
+.step-btn{width:24px;height:24px;border-radius:7px;border:1px solid var(--line);background:var(--card3);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s}
+.step-btn:active{transform:scale(0.88);background:var(--orange)}
+.supp-section{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-subtle)}
+.supp-label{font-size:.68rem;font-weight:700;letter-spacing:1px;color:var(--dim);margin-bottom:8px;text-transform:uppercase}
 
-.coach-msg{border-left:3px solid var(--orange);padding:12px 14px;margin-bottom:12px;background:rgba(255,107,0,0.04);border-radius:0 12px 12px 0}
-.coach-msg.warn{border-color:#f59e0b;background:rgba(245,158,11,0.05)}
-.coach-msg.bad{border-color:var(--red);background:rgba(244,63,94,0.05)}
-.coach-msg.info{border-color:var(--blue);background:rgba(56,189,248,0.05)}
-.coach-msg .who{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px;font-weight:600}
-.coach-msg p{font-size:.86rem;line-height:1.55;color:var(--txt)}
+/* Cronometer Meal Accordions */
+.meal-group{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px;transition:border-color .15s}
+.meal-group:focus-within{border-color:var(--orange)}
+.meal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.meal-title{font-size:.82rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:8px}
+.meal-kcal{font-size:.76rem;color:var(--dim);font-weight:600;font-variant-numeric:tabular-nums}
+.meal-add-btn{background:rgba(255,107,0,0.12);border:1px solid rgba(255,107,0,0.3);color:var(--orange);border-radius:8px;padding:4px 9px;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .12s}
+.meal-add-btn:active{transform:scale(0.92)}
+.diary-accordion{display:flex;flex-direction:column;gap:2px}
 
-nav{position:fixed;bottom:0;left:0;right:0;max-width:440px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(18,18,21,0.85);border-top:1px solid var(--line);padding:9px 6px calc(9px + env(safe-area-inset-bottom));z-index:30;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 -10px 30px rgba(0,0,0,0.5)}
-nav button{background:none;border:none;color:var(--dim);font-size:.62rem;font-weight:600;letter-spacing:.4px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;text-transform:uppercase;transition:all .15s}
-nav button .ic{font-size:1.25rem;line-height:1}
+.food-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card);border:1px solid var(--line-subtle);border-radius:10px;margin-bottom:6px;font-size:.86rem}
+.food-name{font-weight:600;color:#fff;flex:1}
+.food-badges{display:flex;align-items:center;gap:6px}
+.badge-pill{font-size:.68rem;padding:2px 7px;border-radius:6px;font-weight:700;font-variant-numeric:tabular-nums}
+.badge-pill.kcal{background:var(--card3);color:var(--txt2)}
+.badge-pill.prot{background:rgba(255,107,0,0.15);color:var(--orange)}
+.del-btn{background:none;border:none;color:var(--dim);font-size:1.1rem;padding:2px 6px;cursor:pointer;transition:color .12s}
+.del-btn:hover{color:var(--rose)}
+
+/* Morning Weigh-in Split Boxes */
+.weighin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.weighin-box{background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:14px 15px;display:flex;flex-direction:column;gap:6px}
+.weighin-top{display:flex;justify-content:space-between;align-items:center}
+.weighin-label{font-size:.72rem;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.8px}
+.weighin-unit{font-size:.68rem;color:var(--dim);font-weight:600}
+.weighin-input-row{display:flex;align-items:center;gap:8px}
+.weighin-input{background:transparent;border:none;color:#fff;font-family:'Clash Display',system-ui;font-size:1.45rem;font-weight:700;width:100%;outline:none;font-variant-numeric:tabular-nums;padding:0}
+.btn-save{background:rgba(255,107,0,0.15);border:1px solid rgba(255,107,0,0.3);color:var(--orange);font-weight:700;font-size:.72rem;padding:5px 10px;border-radius:9px;cursor:pointer;transition:all .12s}
+.btn-save:active{transform:scale(0.92);background:var(--orange);color:#fff}
+.weighin-note{font-size:.68rem;color:var(--dim);font-weight:500}
+
+/* Workout Session Card */
+.workout-card{background:linear-gradient(180deg, var(--card) 0%, rgba(22,26,36,0.6) 100%);border:1px solid var(--line);border-radius:var(--card-radius);padding:18px 20px;margin-bottom:16px}
+.ex-card{background:var(--card2);border:1px solid var(--line-subtle);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+.ex-title{font-size:.92rem;font-weight:700;color:#fff;display:flex;justify-content:space-between;align-items:center}
+.ex-meta{font-size:.74rem;color:var(--txt2);margin:4px 0 10px;font-weight:500}
+.set-table{display:flex;flex-direction:column;gap:6px}
+.set-header-row{display:flex;align-items:center;gap:8px;padding:0 0 6px;border-bottom:1px solid var(--line-subtle);font-size:.66rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.8px}
+.set-header-row .th-set{width:28px;text-align:left}
+.set-header-row .th-prev{flex:1;text-align:left}
+.set-header-row .th-kg{width:64px;text-align:center}
+.set-header-row .th-reps{width:64px;text-align:center}
+.set-header-row .th-done{width:36px;text-align:center}
+.set-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line-subtle)}
+.set-row:last-child{border-bottom:none}
+.set-num{font-size:.7rem;font-weight:700;color:var(--dim);width:28px;text-transform:uppercase}
+.set-input{width:64px;padding:8px 6px;font-size:.86rem;border-radius:10px;background:var(--card);border:1px solid var(--line);color:#fff;text-align:center;outline:none;font-family:inherit;font-weight:600}
+.set-input:focus{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange-glow)}
+.check-btn{width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .15s}
+.check-btn.on{background:var(--emerald);border-color:var(--emerald);color:#fff;box-shadow:0 2px 10px rgba(16,185,129,0.35)}
+.check-btn:active{transform:scale(0.88)}
+
+/* Bottom Navigation Bar (Stripe/Uber Style Glass Dock) */
+nav{position:fixed;bottom:0;left:0;right:0;max-width:440px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(17,20,28,0.88);border-top:1px solid var(--line);padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:40;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 -10px 30px rgba(0,0,0,0.6)}
+nav button{background:none;border:none;color:var(--dim);font-size:.65rem;font-weight:700;letter-spacing:.5px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;text-transform:uppercase;transition:all .15s}
+nav button .ic{font-size:1.3rem;line-height:1}
 nav button.on{color:var(--orange)}
+nav button.on .ic{transform:translateY(-1px)}
 
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.cal .d{aspect-ratio:1;border-radius:10px;background:var(--card2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--txt2);position:relative;font-variant-numeric:tabular-nums;font-weight:600}
-.cal .d.done{border-color:rgba(16,185,129,0.4);color:#34d399;background:var(--green-soft)}
-.cal .d.today{outline:2px solid var(--orange);outline-offset:-1px;color:#fff;font-weight:800;background:var(--orange-glow)}
-.cal .d.deload{background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.3);color:var(--blue)}
-.cal .d.future{opacity:.35}
+/* Global Buttons */
+.btn{background:var(--brand-gradient);color:#fff;border:none;border-radius:var(--btn-radius);padding:13px 20px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;box-shadow:0 6px 18px rgba(255,107,0,0.3)}
+.btn:active{transform:scale(0.97);filter:brightness(1.1)}
+.btn.ghost{background:var(--card2);border:1px solid var(--line);color:var(--txt);box-shadow:none}
+.btn.sm{padding:9px 16px;font-size:.82rem;border-radius:12px}
 
-.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:.68rem;color:var(--dim);font-weight:500}
-.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-.weekhdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
-.weekhdr b{font-family:'Clash Display',system-ui;font-size:1.05rem;color:#fff}
-.weekhdr span{font-size:.72rem;color:var(--txt2);font-weight:500}
-.prog{height:6px;background:var(--card2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
-.prog i{display:block;height:100%;background:var(--brand-gradient);border-radius:99px;transition:width .4s}
-
-.small{font-size:.76rem;color:var(--txt2);line-height:1.55;font-weight:400}
-.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:2px 6px;color:var(--orange);font-weight:600}
-hr.sep{border:none;border-top:1px solid var(--line);margin:14px 0}
-.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:#1f1f23;border:1px solid rgba(255,255,255,0.12);box-shadow:0 12px 28px rgba(0,0,0,0.6);color:#fff;font-weight:600;font-size:.8rem;padding:9px 18px;border-radius:999px;opacity:0;transition:opacity .22s,transform .25s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:40;white-space:nowrap}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(-6px)}
-
-.hero{background:var(--hero-gradient);color:#fff;border-radius:22px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden;border:1px solid rgba(255,107,0,0.22);box-shadow:0 12px 32px -8px rgba(0,0,0,0.7)}
-.hero h2{font-family:'Clash Display',system-ui;font-size:1.35rem;font-weight:700;line-height:1.2;color:#fff}
-.hero p{color:#a1a1aa;font-size:.84rem;margin-top:6px;font-weight:400}
-.hero .cta{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:var(--brand-gradient);color:#fff;padding:9px 16px;border-radius:12px;font-weight:600;font-size:.82rem;cursor:pointer;box-shadow:0 4px 14px rgba(255,107,0,0.3)}
-
-/* ============ FOOD DIARY (MyFitnessPal & Cronometer style) ============ */
-.meal{margin-bottom:14px;background:var(--card2);border:1px solid var(--line-subtle);border-radius:14px;padding:12px 14px}
-.mealname{font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:1px;color:var(--txt2);display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.foodrow{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:6px;font-size:.88rem;color:var(--txt)}
-.foodrow span:first-child{flex:1;font-weight:500}
-.del{background:none;border:none;color:var(--dim);font-size:1.1rem;padding:2px 6px;cursor:pointer;line-height:1}
-.del:hover{color:var(--red)}
-.pickrow{cursor:pointer;transition:background .15s,transform .1s}
-.pickrow:hover{background:var(--card-hover)}
-.pickrow:active{background:var(--line);transform:scale(0.99)}
-.star{background:none;border:none;font-size:1.05rem;padding:2px 4px;cursor:pointer;color:var(--dim)}
-.star.on{color:var(--orange)}
-
+/* Slide Bottom Sheet */
 #pickOverlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:50;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
 #pickOverlay.on{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s}
-#pickSheet{background:var(--bg2);width:100%;max-width:440px;max-height:85vh;border-radius:24px 24px 0 0;padding:18px 20px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;box-shadow:0 -12px 40px rgba(0,0,0,.75);border-top:1px solid var(--line);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
+#pickSheet{background:var(--bg2);width:100%;max-width:440px;max-height:85vh;border-radius:26px 26px 0 0;padding:20px 22px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;box-shadow:0 -12px 40px rgba(0,0,0,.85);border-top:1px solid var(--line);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
 #pickOverlay.on #pickSheet{transform:none}
 #pickList{scrollbar-width:none}
 #pickList::-webkit-scrollbar{display:none}
 
-.metric{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
-.metric b{display:block;font-family:'Clash Display',system-ui;font-size:1.15rem;font-weight:700;color:#fff}
-.metric span{font-size:.65rem;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:#1f2330;border:1px solid rgba(255,255,255,0.15);box-shadow:0 12px 28px rgba(0,0,0,0.7);color:#fff;font-weight:700;font-size:.82rem;padding:10px 20px;border-radius:999px;opacity:0;transition:opacity .2s,transform .25s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:50;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(-8px)}
 </style>
 </head>
 <body>
@@ -165,64 +201,231 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:14px 0}
   <!-- TODAY -->
   <section class="screen on" id="scr-today">
     <div class="hero" id="heroCard">
+      <div class="hero-top">
+        <span class="hero-tag">13-WEEK RECOMP PROTOCOL</span>
+        <span class="hero-badge" id="heroBadge">Day 1</span>
+      </div>
       <h2 id="heroTitle">Your 13-week<br>transformation starts now</h2>
       <p id="heroSub">Today's focus: build the habit, trust the process</p>
-      <span class="cta" onclick="document.getElementById('sessCard').scrollIntoView({behavior:'smooth',block:'start'})">→ Start today's session</span>
+      <div class="hero-cta" onclick="document.getElementById('sessionCard').scrollIntoView({behavior:'smooth',block:'start'})">
+        <span>Start Today's Session</span>
+        <span class="hero-arrow">→</span>
+      </div>
     </div>
+
     <div class="card" id="prepCard" style="display:none">
-      <h3>Day 0 — Prep checklist</h3>
+      <div class="card-header">
+        <div class="card-title">Day 0 — Prep Checklist</div>
+        <span class="chip amber">Setup</span>
+      </div>
       <div id="prepList"></div>
     </div>
-    <div class="card">
-      <h3 style="display:flex;justify-content:space-between;align-items:center">Protein Target <span class="chip fire" style="font-size:.68rem">Daily Core</span></h3>
-      <div class="ringwrap">
-        <div class="ring">
-          <svg width="96" height="96" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="8"/>
-            <circle id="pring" cx="50" cy="50" r="44" fill="none" stroke="url(#orangeGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5"/>
-            <defs>
-              <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ff8533"/>
-                <stop offset="100%" stop-color="#ff6b00"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <div class="val"><span class="big" id="pval">0</span><span class="small">/ <span id="ptgt">170</span> g</span></div>
-        </div>
-        <div style="flex:1">
-          <div class="chips" id="pChips"></div>
-          <p class="small" id="pRemain" style="margin-top:8px;font-weight:600;color:var(--txt2)"></p>
-        </div>
-      </div>
-    </div>
-    <div class="card" id="diaryCard">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+
+    <!-- Cronometer / MyFitnessPal Macro Dashboard Card -->
+    <div class="card macro-card">
+      <div class="card-header">
         <div>
-          <h3 style="margin:0">Food Diary</h3>
-          <span style="font-size:.74rem;color:var(--txt2)">Nutrition & calorie timeline</span>
+          <div class="card-title">Daily Energy & Macros</div>
+          <div class="card-subtitle" id="energyFormula">Goal 1,850 · Food 0 · Remaining 1,850</div>
         </div>
-        <span class="chip fire" id="diaryTotal" style="text-transform:none;font-weight:600">empty</span>
+        <span class="chip fire" id="macroStatusChip">Core Goal</span>
       </div>
-      <div id="diaryBody"></div>
-      <button class="btn sm" id="addFoodBtn" style="margin-top:10px;width:100%">+ Log Food Entry</button>
+      <div class="macro-dashboard">
+        <!-- Calorie Ring Gauge -->
+        <div class="macro-ring-box">
+          <div class="ring">
+            <svg width="112" height="112" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="7"/>
+              <circle id="calRing" cx="50" cy="50" r="42" fill="none" stroke="url(#orangeGrad)" stroke-width="7" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+              <defs>
+                <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ff8533"/>
+                  <stop offset="100%" stop-color="#ff6b00"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="val">
+              <span class="big" id="calLeftVal">1850</span>
+              <span class="small">KCAL LEFT</span>
+            </div>
+          </div>
+        </div>
+        <!-- Macro Progress Bars (Protein, Calories, Water) -->
+        <div class="macro-bars">
+          <div class="bar-wrap">
+            <div class="bar-meta">
+              <span class="name">Protein <span id="pRemain" class="subtle"></span></span>
+              <span class="val"><b id="pval">0</b> / <span id="ptgt">170</span>g</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill orange" id="pBarFill" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-meta">
+              <span class="name">Calories Consumed</span>
+              <span class="val"><b id="calEatenVal">0</b> / <span id="calTgtVal">1850</span> kcal</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill blue" id="calBarFill" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-meta">
+              <span class="name">Daily Hydration</span>
+              <span class="val"><b id="waterBarVal">0</b> / 8 gl</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill emerald" id="waterBarFill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Quick Macro Boost Chips -->
+      <div class="quick-macro-sec">
+        <div class="quick-sec-label">QUICK PROTEIN BOOST</div>
+        <div class="chips" id="pChips"></div>
+      </div>
     </div>
-    <div class="card">
-      <h3>Daily five</h3>
-      <div class="row"><label>Calories <span class="unit">kcal</span></label><input type="number" id="inKcal" inputmode="numeric" placeholder="—"></div>
-      <p class="small" id="kcalHint" style="margin-top:-4px;color:var(--txt2)">Auto-fills from the diary — edit only if you ate off-plan.</p>
-      <div class="row"><label>Steps</label><input type="number" id="inSteps" inputmode="numeric" placeholder="—"></div>
-      <div class="row"><label>Sleep <span class="unit">hours</span></label><input type="number" id="inSleep" step="0.5" inputmode="decimal" placeholder="—"></div>
-      <div class="row"><label>Water <span class="unit">glasses</span></label><input type="number" id="inWater" inputmode="numeric" placeholder="—"></div>
-      <div class="chips" id="suppChips" style="margin-top:10px"></div>
+
+    <!-- Daily Vitals 2x2 Interactive Grid (Replacing old Daily 5) -->
+    <div class="card metric-section">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Daily Vitals & Habits</div>
+          <div class="card-subtitle">Tap values to update anytime</div>
+        </div>
+        <span class="card-badge" style="background:rgba(255,255,255,0.06);color:var(--txt2);font-size:.7rem">Core 4</span>
+      </div>
+      <div class="metric-grid">
+        <!-- Tile 1: Calories -->
+        <div class="metric-tile">
+          <div class="metric-top">
+            <span class="metric-label">Calories</span>
+            <span class="metric-icon" style="background:var(--orange-glow);color:var(--orange)">🔥</span>
+          </div>
+          <div class="metric-body">
+            <div class="metric-input-wrap">
+              <input type="number" id="inKcal" class="metric-input" inputmode="numeric" placeholder="0">
+              <span class="metric-unit">kcal</span>
+            </div>
+            <div class="metric-sub" id="kcalHint">Auto from diary</div>
+          </div>
+        </div>
+        <!-- Tile 2: Steps -->
+        <div class="metric-tile">
+          <div class="metric-top">
+            <span class="metric-label">Steps</span>
+            <span class="metric-icon" style="background:var(--emerald-glow);color:#34d399">👟</span>
+          </div>
+          <div class="metric-body">
+            <div class="metric-input-wrap">
+              <input type="number" id="inSteps" class="metric-input" inputmode="numeric" placeholder="0">
+              <span class="metric-unit">steps</span>
+            </div>
+            <div class="metric-sub">Target: 10,000</div>
+          </div>
+        </div>
+        <!-- Tile 3: Sleep -->
+        <div class="metric-tile">
+          <div class="metric-top">
+            <span class="metric-label">Sleep</span>
+            <span class="metric-icon" style="background:rgba(129,140,248,0.15);color:#818cf8">🌙</span>
+          </div>
+          <div class="metric-body">
+            <div class="metric-input-wrap">
+              <input type="number" id="inSleep" class="metric-input" step="0.5" inputmode="decimal" placeholder="0">
+              <span class="metric-unit">hrs</span>
+            </div>
+            <div class="metric-sub">Target: 7.5h floor</div>
+          </div>
+        </div>
+        <!-- Tile 4: Water -->
+        <div class="metric-tile">
+          <div class="metric-top">
+            <span class="metric-label">Water</span>
+            <span class="metric-icon" style="background:var(--blue-glow);color:var(--blue)">💧</span>
+          </div>
+          <div class="metric-body">
+            <div class="metric-input-wrap" style="justify-content:space-between">
+              <div style="display:flex;align-items:baseline;gap:4px">
+                <input type="number" id="inWater" class="metric-input" inputmode="numeric" placeholder="0" style="width:50px">
+                <span class="metric-unit">gl</span>
+              </div>
+              <div class="water-stepper">
+                <button class="step-btn" onclick="addWater(-1)" title="decrease">−</button>
+                <button class="step-btn" onclick="addWater(1)" title="increase">+</button>
+              </div>
+            </div>
+            <div class="metric-sub" id="waterStatus">Goal: 8 glasses</div>
+          </div>
+        </div>
+      </div>
+      <!-- Supplements Row -->
+      <div class="supp-section">
+        <div class="supp-label">DAILY SUPPLEMENTS</div>
+        <div class="chips" id="suppChips"></div>
+      </div>
     </div>
-    <div class="card" id="sessionCard">
-      <h3 id="sessTitle" style="display:flex;justify-content:space-between;align-items:center"><span id="sessName">Session</span> <span id="restBadge" class="chip" style="display:none;text-transform:none;letter-spacing:0"></span></h3>
+
+    <!-- Food Diary Accordion (Cronometer / MyFitnessPal) -->
+    <div class="card" id="diaryCard">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Nutrition Timeline</div>
+          <div class="card-subtitle">Log meals & track micronutrients</div>
+        </div>
+        <span class="chip fire" id="diaryTotal" style="text-transform:none;font-weight:600">0 kcal · 0g P</span>
+      </div>
+      <div id="diaryBody" class="diary-accordion"></div>
+      <button class="btn sm" id="addFoodBtn" style="margin-top:12px;width:100%">+ Quick Search & Log Food</button>
+    </div>
+
+    <!-- Workout Session Card (Hevy / Strong style) -->
+    <div class="card workout-card" id="sessionCard">
+      <div class="card-header" style="margin-bottom:12px">
+        <div>
+          <div class="card-title" style="color:var(--orange)">TODAY'S WORKOUT</div>
+          <h3 id="sessName" style="margin:2px 0 0;font-size:1.15rem;letter-spacing:-0.2px">Session</h3>
+        </div>
+        <span id="restBadge" class="chip fire" style="display:none;text-transform:none;letter-spacing:0;font-weight:700">Rest 90s</span>
+      </div>
       <div id="sessBody"></div>
     </div>
-    <div class="card">
-      <h3>Morning weigh-in</h3>
-      <div class="row"><label>Weight <span class="unit">kg</span></label><input type="number" id="inWeight" step="0.1" inputmode="decimal" placeholder="—"><button class="btn sm" id="saveW">Save</button></div>
-      <div class="row"><label>Waist <span class="unit">cm (Sundays)</span></label><input type="number" id="inWaist" step="0.5" inputmode="decimal" placeholder="—"><button class="btn sm" id="saveWaist">Save</button></div>
+
+    <!-- Morning Weigh-in Split Cards -->
+    <div class="card weighin-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Morning Vitals</div>
+          <div class="card-subtitle">Fast weight & tape check-in</div>
+        </div>
+        <span class="card-badge" style="background:rgba(255,255,255,0.06);color:var(--dim)">Scale Check</span>
+      </div>
+      <div class="weighin-grid">
+        <div class="weighin-box">
+          <div class="weighin-top">
+            <span class="weighin-label">Body Weight</span>
+            <span class="weighin-unit">kg</span>
+          </div>
+          <div class="weighin-input-row">
+            <input type="number" id="inWeight" step="0.1" inputmode="decimal" placeholder="78.0" class="weighin-input">
+            <button class="btn-save" id="saveW">Save</button>
+          </div>
+          <div class="weighin-note" id="weightDelta">—</div>
+        </div>
+        <div class="weighin-box">
+          <div class="weighin-top">
+            <span class="weighin-label">Waist Tape</span>
+            <span class="weighin-unit">cm (Sun)</span>
+          </div>
+          <div class="weighin-input-row">
+            <input type="number" id="inWaist" step="0.5" inputmode="decimal" placeholder="—" class="weighin-input">
+            <button class="btn-save" id="saveWaist">Save</button>
+          </div>
+          <div class="weighin-note">Weekly anchor</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -435,12 +638,14 @@ function countTo(el,to){const from=parseFloat(el.textContent)||0;if(from===to){e
 function renderToday(){
   const iso=tkey();D(iso);
   const wk=weekOf(iso),ph=phaseOf(wk);
-  document.getElementById('hdate').textContent=WD[dow(iso)]+', '+(wk? 'Week '+wk+' of 13' : 'Prep');
+  document.getElementById('hdate').textContent=WD[dow(iso)]+' · '+(wk? 'Week '+wk+' of 13' : 'Prep');
   const daysLeft=dayDiff(iso,S.profile.end);
   document.getElementById('hsub').textContent=iso+' · phase: '+ph+(ph==='DELOAD'?' · half sets, same weights':ph==='FINAL'?' · last week!':ph==='PREP'?' · get ready':'');
   document.getElementById('weekChip').textContent=ph==='PREP'?'PREP':'WK '+wk+' · '+ph;
-  document.getElementById('streakChip').innerHTML='🔥 '+streak();
+  document.getElementById('streakChip').innerHTML='🔥 '+streak()+' streak';
   const hero=document.getElementById('heroCard');
+  const heroBadge=document.getElementById('heroBadge');
+  if(heroBadge)heroBadge.textContent=ph==='PREP'?'Setup Phase':`Week ${wk||1} · Day ${(dow(iso)+6)%7+1}`;
   if(ph==='PREP'){
     document.getElementById('heroTitle').innerHTML='Almost there.<br>Prep first.';
     document.getElementById('heroSub').textContent='Get your tape, log Day-0 waist, order the pull-up bar. Program starts Sep 1.';
@@ -456,55 +661,134 @@ function renderToday(){
   if(ph==='PREP'){pc.style.display='';document.getElementById('prepList').innerHTML=PREPS.map((p,i)=>
     `<div class="row"><label>${p}</label><button class="tog ${D(iso).prep[i]?'on':''}" onclick="togPrep('${iso}',${i})">${D(iso).prep[i]?'✓':'—'}</button></div>`).join('')}
   else pc.style.display='none';
-  const p=D(iso).protein,tgt=S.profile.protein;
+
+  const d=D(iso);
+  const p=d.protein||0,tgt=S.profile.protein||170;
+  const calTgt=dow(iso)===0||dow(iso)===6?(S.profile.kcalRefeed||2000):(S.profile.kcal||1850);
+  const calEaten=d.kcal||0;
+  const calLeft=Math.max(0,calTgt-calEaten);
+
+  // Macro Card & Ring Bindings
+  countTo(document.getElementById('calLeftVal'),calLeft);
+  document.getElementById('energyFormula').textContent=`Goal ${calTgt.toLocaleString()} · Food ${calEaten.toLocaleString()} · Remaining ${calLeft.toLocaleString()}`;
+  document.getElementById('calRing').style.strokeDashoffset=263.9*(1-Math.min(1,calEaten/calTgt));
+  
   countTo(document.getElementById('pval'),p);
   document.getElementById('ptgt').textContent=tgt;
-  document.getElementById('pring').style.strokeDashoffset=276.5*(1-Math.min(1,p/tgt));
-  document.getElementById('pring').style.stroke='url(#orangeGrad)';
-  document.getElementById('pRemain').textContent=p>=tgt?'✓ target hit':(tgt-p)+' g to go';
-  document.getElementById('pChips').innerHTML=PROTEIN_CHIPS.map(c=>`<button class="tog" onclick="addP('${iso}',${c[1]})">+${c[1]} ${c[0]}</button>`).join('')+`<button class="tog" style="border-color:var(--red);color:var(--red)" onclick="addP('${iso}',-10)">−10</button>`;
-  const d=D(iso);
+  document.getElementById('pBarFill').style.width=Math.min(100,Math.round((p/tgt)*100))+'%';
+  document.getElementById('pRemain').textContent=p>=tgt?'(✓ target hit)':`(${(tgt-p)}g left)`;
+
+  document.getElementById('calEatenVal').textContent=calEaten.toLocaleString();
+  document.getElementById('calTgtVal').textContent=calTgt.toLocaleString();
+  document.getElementById('calBarFill').style.width=Math.min(100,Math.round((calEaten/calTgt)*100))+'%';
+
+  const water=d.water||0;
+  document.getElementById('waterBarVal').textContent=water;
+  document.getElementById('waterBarFill').style.width=Math.min(100,Math.round((water/8)*100))+'%';
+  document.getElementById('waterStatus').textContent=`${water} / 8 glasses (${Math.round((water/8)*100)}%)`;
+
+  document.getElementById('pChips').innerHTML=PROTEIN_CHIPS.map(c=>`<button class="chip-action" onclick="addP('${iso}',${c[1]})">+${c[1]}g <span style="color:var(--txt2);font-weight:500">${c[0]}</span></button>`).join('')+`<button class="chip-action neg" onclick="addP('${iso}',-10)">−10g</button>`;
+
+  // Render Food Diary
   renderDiary(iso);
+
+  // Daily Vitals Tiles
   setVal('inKcal',d.kcal);setVal('inSteps',d.steps);setVal('inSleep',d.sleep);setVal('inWater',d.water);
-  document.getElementById('suppChips').innerHTML=SUPPS.map(s=>`<button class="tog ${d.supps[s[0]]?'on':''}" onclick="togSupp('${iso}','${s[0]}')">${d.supps[s[0]]?'✓':'○'} ${s[1]}</button>`).join('');
+  document.getElementById('suppChips').innerHTML=SUPPS.map(s=>`<button class="chip-action ${d.supps[s[0]]?'on':''}" style="${d.supps[s[0]]?'background:var(--emerald-glow);border-color:rgba(16,185,129,0.4);color:#34d399':''}" onclick="togSupp('${iso}','${s[0]}')">${d.supps[s[0]]?'✓':'○'} ${s[1]}</button>`).join('');
+
+  // Workout Session (Hevy / Strong style)
   const sid=sessionFor(iso),sess=SESSIONS[sid];
   document.getElementById('sessName').textContent=sess.name;
   const wk2=weekOf(iso);
-  const deloadNote=(wk2>=7&&ph==='DELOAD')?'<p class="small" style="color:var(--blue);margin-bottom:8px">Deload week — do HALF the sets, same weights.</p>':'';
+  const deloadNote=(wk2>=7&&ph==='DELOAD')?'<p class="small" style="color:var(--blue);margin-bottom:12px;padding:8px 12px;background:rgba(56,189,248,0.08);border-radius:10px;border:1px solid rgba(56,189,248,0.2)">Deload week — do HALF the sets, same weights.</p>':'';
   document.getElementById('sessBody').innerHTML=deloadNote+(sess.ex.length
     ?sess.ex.map((e,i)=>{
     const sets=parseInt(e[1])||3;const prev=prevSets(iso);
-    const rows=[];for(let s=0;s<Math.min(sets,6);s++){const k=d.sets[i+'_'+s]||{};const pk=prev[i+'_'+s]||{};rows.push(
-      `<div class="setrow"><span class="s">set ${s+1}</span><input type="number" step="0.5" placeholder="kg" value="${k.kg??''}" onchange="setSet('${iso}',${i},${s},'kg',this.value)"><input type="number" placeholder="reps" value="${k.reps??''}" onchange="setSet('${iso}',${i},${s},'reps',this.value)"><button class="done ${k.done?'on':''}" onclick="setSet('${iso}',${i},${s},'done')">✓</button>${pk.kg&&k.kg==null?`<span class="unit" style="font-size:.65rem">last: ${pk.kg}×${pk.reps??'?'}</span>`:''}</div>`)}
-    return `<div class="ex"><div class="exname">${e[0]}<a href="${vidFor(e[0])}" target="_blank" rel="noopener" style="font-size:.72rem;color:var(--orange);font-weight:700;white-space:nowrap">Form ↗</a></div><div class="extarget">${e[1]}${wk2<=2?' · ~60% effort':''}</div>${rows.join('')}</div>`}).join('')
-    :'<p class="small">Recovery day. Steps + protein + sleep only. This day protects the other six.</p>');
+    const rows=[];for(let s=0;s<Math.min(sets,6);s++){
+      const k=d.sets[i+'_'+s]||{};const pk=prev[i+'_'+s]||{};
+      const prevText=pk.kg?`${pk.kg}kg × ${pk.reps??'?'}`:'—';
+      rows.push(
+        `<div class="set-row">
+          <span class="set-num">${s+1}</span>
+          <span style="flex:1;font-size:.74rem;color:var(--dim);font-weight:600">${prevText}</span>
+          <input type="number" step="0.5" class="set-input" placeholder="kg" value="${k.kg??''}" onchange="setSet('${iso}',${i},${s},'kg',this.value)">
+          <input type="number" class="set-input" placeholder="reps" value="${k.reps??''}" onchange="setSet('${iso}',${i},${s},'reps',this.value)">
+          <button class="check-btn ${k.done?'on':''}" onclick="setSet('${iso}',${i},${s},'done')">✓</button>
+        </div>`
+      );
+    }
+    return `<div class="ex-card">
+      <div class="ex-title">
+        <span>${e[0]}</span>
+        <a href="${vidFor(e[0])}" target="_blank" rel="noopener" style="font-size:.7rem;color:var(--orange);font-weight:700;background:rgba(255,107,0,0.1);padding:3px 8px;border-radius:6px;text-decoration:none;border:1px solid rgba(255,107,0,0.25)">Form ↗</a>
+      </div>
+      <div class="ex-meta">${e[1]}${wk2<=2?' · ~60% effort':''}</div>
+      <div class="set-table">
+        <div class="set-header-row">
+          <span class="th-set">Set</span>
+          <span class="th-prev">Previous</span>
+          <span class="th-kg">KG</span>
+          <span class="th-reps">Reps</span>
+          <span class="th-done">Done</span>
+        </div>
+        ${rows.join('')}
+      </div>
+    </div>`}).join('')
+    :'<div style="padding:24px 16px;text-align:center;color:var(--txt2);font-size:.86rem"><div style="font-size:2rem;margin-bottom:8px">🌿</div><b>Scheduled Rest & Recovery</b><p class="small" style="margin-top:6px;color:var(--dim)">Focus on 10,000 steps, protein target, and 7.5h quality sleep.</p></div>');
+
+  // Weigh-in
   setVal('inWeight',d.weight);setVal('inWaist',d.waist);
+  const wDelta=document.getElementById('weightDelta');
+  if(wDelta){
+    if(d.weight && S.profile.w0){
+      const diff=(d.weight - S.profile.w0).toFixed(1);
+      wDelta.textContent=(diff>0?`+${diff}`:`${diff}`)+` kg vs start (${S.profile.w0} kg)`;
+      wDelta.style.color=diff<=0?'var(--emerald)':'var(--rose)';
+    }else{
+      wDelta.textContent=`Baseline: ${S.profile.w0||78} kg`;
+      wDelta.style.color='var(--dim)';
+    }
+  }
 }
-function setVal(id,v){document.getElementById(id).value=v??''}
-window.addP=(iso,g)=>{D(iso).protein=Math.max(0,(D(iso).protein||0)+g);haptic();save();renderToday()};
+function setVal(id,v){const el=document.getElementById(id);if(el)el.value=v??''}
+window.addP=(iso,g)=>{D(iso).protein=Math.max(0,(D(iso).protein||0)+g);haptic(10);save();renderToday()};
+window.addWater=(delta)=>{const iso=tkey(),d=D(iso);d.water=Math.max(0,(d.water||0)+delta);haptic(8);save();renderToday()};
+
 /* ============ FOOD DIARY ENGINE ============ */
 function mealTotals(iso){const d=S.days[iso];if(!d||!d.meals)return{kcal:0,p:0,n:0};
   let kcal=0,p=0,n=0;for(const m in d.meals)for(const f of d.meals[m]){kcal+=f.kcal;p+=f.p;n++}return{kcal,p,n}}
 function syncDiary(iso){const d=D(iso),t=mealTotals(iso);
   d.kcal=t.kcal;d.protein=Math.round(t.p);save()}
 window.renderDiary=(iso)=>{const d=D(iso),t=mealTotals(iso);
-  document.getElementById('diaryTotal').textContent=t.kcal?`${t.kcal} kcal · ${Math.round(t.p)}g P`:'empty';
+  document.getElementById('diaryTotal').textContent=t.kcal?`${t.kcal} kcal · ${Math.round(t.p)}g P`:'0 kcal · 0g P';
+  const ICONS={breakfast:'🌅',lunch:'☀️',dinner:'🌙',snacks:'🍎'};
   document.getElementById('diaryBody').innerHTML=MEALS.map(([mid,mlabel])=>{
     const items=d.meals[mid]||[];
     const mealKcal=items.reduce((a,f)=>a+f.kcal,0);
     const mealP=items.reduce((a,f)=>a+f.p,0);
-    return `<div class="meal">
-      <div class="mealname">
-        <span style="display:flex;gap:8px;align-items:center">${mlabel} <button class="tog" style="padding:2px 8px;font-size:.72rem" onclick="openPicker('${iso}','${mid}')">+ Add</button></span>
-        <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--dim);font-size:.75rem">${items.length?`${mealKcal} kcal · ${Math.round(mealP)}g P`:''}</span>
-      </div>${
-      items.length?items.map((f,i)=>`<div class="foodrow">
-        <span style="font-weight:500">${f.n}</span>
-        <span class="chip" style="font-size:.7rem;padding:2px 7px">${f.kcal} kcal</span>
-        <span class="chip amber" style="font-size:.7rem;padding:2px 7px">${f.p}g P</span>
-        <button class="del" onclick="delFood('${iso}','${mid}',${i})" title="remove">×</button>
-      </div>`).join('')
-      :'<p class="small" style="color:var(--dim);margin:3px 0 1px;font-style:italic">No items logged yet</p>'}</div>`}).join('')};
+    return `<div class="meal-group">
+      <div class="meal-header">
+        <div class="meal-title">
+          <span>${ICONS[mid]||'🍽️'}</span>
+          <span>${mlabel}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="meal-kcal">${items.length?`${mealKcal} kcal · ${Math.round(mealP)}g P`:''}</span>
+          <button class="meal-add-btn" onclick="openPicker('${iso}','${mid}')">+ Add</button>
+        </div>
+      </div>
+      ${items.length?items.map((f,i)=>`
+        <div class="food-row">
+          <span class="food-name">${f.n}</span>
+          <div class="food-badges">
+            <span class="badge-pill kcal">${f.kcal} kcal</span>
+            <span class="badge-pill prot">${f.p}g P</span>
+            <button class="del-btn" onclick="delFood('${iso}','${mid}',${i})" title="remove">×</button>
+          </div>
+        </div>
+      `).join('')
+      :`<div style="font-size:.74rem;color:var(--dim);padding:8px 4px;border:1px dashed var(--line-subtle);border-radius:10px;text-align:center;cursor:pointer" onclick="openPicker('${iso}','${mid}')">+ Log ${mlabel.toLowerCase()}</div>`}
+    </div>`}).join('')};
 window.delFood=(iso,m,i)=>{D(iso).meals[m].splice(i,1);syncDiary(iso);renderToday();haptic();toast('removed')};
 let PICK={iso:null,meal:null,q:''};
 function foodMatches(){const q=PICK.q.toLowerCase();
