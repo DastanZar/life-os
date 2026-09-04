@@ -1,0 +1,35 @@
+{
+  "packageId": "com.lifeos.bodyos",
+  "host": "does-diagram-fairly-ran.trycloudflare.com",
+  "startUrl": "/index.html",
+  "name": "BODY OS",
+  "launcherName": "BODY OS",
+  "themeColor": "#ff7b00",
+  "themeColorDark": "#ff7b00",
+  "navigationColor": "#0a0e12",
+  "navigationColorDark": "#0a0e12",
+  "navigationDividerColor": "#00000000",
+  "navigationDividerColorDark": "#00000000",
+  "backgroundColor": "#0a0e12",
+  "enableNotifications": false,
+  "fallbackType": "customtabs",
+  "enableSiteSettingsShortcut": false,
+  "orientation": "portrait",
+  "splashScreenFadeOutDuration": 300,
+  "generatorApp": "bubblewrap-cli",
+  "appVersionCode": 1,
+  "appVersionName": "1.0",
+  "minSdkVersion": 21,
+  "shortcuts": [],
+  "buildGradle": {
+    "configs": [],
+    "repositories": [
+      "google()",
+      "mavenCentral()"
+    ],
+    "dependencies": [
+      "androidx.browser:browser:1.8.0",
+      "com.google.androidbrowserhelper:androidbrowserhelper:2.5.0"
+    ]
+  }
+}

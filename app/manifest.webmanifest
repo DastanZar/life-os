@@ -1,0 +1,15 @@
+{
+  "name": "BODY OS — 13-Week Recomp",
+  "short_name": "BODY OS",
+  "description": "Life OS Chart 1: body, exercise, nutrition coach. Offline-first.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e12",
+  "theme_color": "#0a0e12",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

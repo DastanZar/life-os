@@ -1,0 +1,31 @@
+# local state & secrets
+app/coach-memory/
+app/__pycache__/
+**/__pycache__/
+*.log
+.env
+*token*
+app/local.properties
+
+# zips & build artifacts never belong in git
+*.zip
+*.mp4
+
+# node
+node_modules/
+
+# unrelated project files that drifted into this folder
+kokoro_*
+durcompare_*
+render_durcompare.py
+duration_calibration_widget.html
+
+# android build artifacts (apk experiment)
+apk/bodyos-twa/.gradle/
+apk/bodyos-twa/app/build/
+apk/bodyos-twa/build/
+apk/bodyos-twa/local.properties
+
+# OS noise
+.DS_Store
+Thumbs.db
