@@ -169,6 +169,7 @@ class H(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    srv = ThreadingHTTPServer(("127.0.0.1", 8795), H)
-    print("BODY OS coach server on :8795 (static + /api/ask + /api/memory)", flush=True)
+    port = int(os.environ.get("BODYOS_PORT", "8790"))
+    srv = ThreadingHTTPServer(("127.0.0.1", port), H)
+    print(f"BODY OS coach server on :{port} (static + /api/ask + /api/memory)", flush=True)
     srv.serve_forever()
