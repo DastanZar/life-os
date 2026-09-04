@@ -1,4 +1,4 @@
-const CACHE='body-os-v4';
+const CACHE='body-os-v5';
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./','./index.html','./manifest.webmanifest'])).catch(()=>{}));
   self.skipWaiting();
