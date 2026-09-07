@@ -160,6 +160,58 @@ main > *:nth-child(8){animation-delay:420ms}
 .del-btn{background:none;border:none;color:var(--dim);font-size:1.1rem;padding:2px 6px;cursor:pointer;transition:color .12s}
 .del-btn:active{color:var(--red)}
 
+/* ============ COACH TAB (chat-first) ============ */
+.coach-hero{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 0 rgba(20,16,10,.04)}
+.coach-hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.coach-greet{font-family:'Clash Display',system-ui,sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:-.3px;color:var(--txt);line-height:1.15}
+.coach-sub{font-size:.78rem;color:var(--txt2);margin-top:3px;font-weight:500;line-height:1.4}
+.coach-mood-pill{font-size:.66rem;font-weight:700;letter-spacing:.6px;padding:5px 10px;border-radius:99px;background:var(--orange-soft);color:var(--orange);text-transform:uppercase;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px}
+.coach-mood-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--orange);display:inline-block}
+.coach-quick-stats{display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line-subtle)}
+.coach-quick-stats div{font-size:.68rem;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.coach-quick-stats div b{display:block;font-family:'Clash Display',system-ui,sans-serif;font-size:1.05rem;font-weight:700;color:var(--txt);letter-spacing:-.3px;margin-top:2px;text-transform:none}
+
+/* Chat thread — iMessage-inspired, paper-bg bubbles */
+.chat-thread{display:flex;flex-direction:column;gap:8px;padding:4px 0 8px;min-height:180px}
+.chat-row{display:flex;gap:6px;align-items:flex-end;animation:chatIn .28s cubic-bezier(.22,1,.36,1) both}
+.chat-row.user{justify-content:flex-end}
+.chat-avatar{width:24px;height:24px;border-radius:50%;background:var(--orange-soft);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:.62rem;letter-spacing:-.2px;border:1px solid rgba(255,107,0,0.2)}
+.chat-bubble{max-width:78%;padding:9px 13px;border-radius:18px;font-size:.86rem;line-height:1.4;font-weight:500;word-wrap:break-word;white-space:pre-wrap}
+.chat-row.coach .chat-bubble{background:var(--card);border:1px solid var(--line);color:var(--txt);border-bottom-left-radius:6px;box-shadow:0 1px 0 rgba(20,16,10,.04)}
+.chat-row.user .chat-bubble{background:var(--orange);color:#fff;border-bottom-right-radius:6px}
+.chat-bubble .meta{font-size:.62rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-top:5px;opacity:.6;display:block}
+.chat-bubble.thinking .dots{display:inline-flex;gap:3px;align-items:center;height:14px}
+.chat-bubble.thinking .dots span{width:5px;height:5px;border-radius:50%;background:var(--dim);animation:dotBounce 1.2s infinite}
+.chat-bubble.thinking .dots span:nth-child(2){animation-delay:.15s}
+.chat-bubble.thinking .dots span:nth-child(3){animation-delay:.3s}
+@keyframes dotBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+@keyframes chatIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.chat-day-sep{align-self:center;font-size:.66rem;font-weight:700;letter-spacing:.6px;color:var(--dim);text-transform:uppercase;padding:4px 10px;margin:6px 0;background:var(--card2);border:1px solid var(--line-subtle);border-radius:99px}
+.chat-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center;color:var(--dim);gap:6px}
+.chat-empty .ic{width:32px;height:32px;border-radius:50%;background:var(--card2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--txt2);margin-bottom:4px}
+.chat-empty p{font-size:.82rem;font-weight:500;color:var(--txt2);max-width:240px;line-height:1.4}
+
+/* Prompt chips — horizontally scrollable, tappable */
+.chat-prompts{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chat-prompts::-webkit-scrollbar{display:none}
+.prompt-chip{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-size:.76rem;font-weight:600;color:var(--txt);white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .12s}
+.prompt-chip:active{background:var(--orange-soft);border-color:rgba(255,107,0,0.3);color:var(--orange);transform:scale(0.96)}
+
+/* Composer — iMessage style, anchored above the bottom nav */
+.chat-composer{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 6px 6px 10px;margin-top:6px;box-shadow:0 2px 8px rgba(20,16,10,.05);transition:border-color .15s}
+.chat-composer:focus-within{border-color:rgba(255,107,0,0.4)}
+.chat-input{flex:1;background:transparent;border:none;outline:none;font-family:inherit;font-size:.92rem;color:var(--txt);padding:8px 4px;min-width:0}
+.chat-input::placeholder{color:var(--dim)}
+.chat-mic,.chat-send{width:32px;height:32px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s;flex-shrink:0}
+.chat-mic{background:transparent;color:var(--dim);padding:7px}
+.chat-mic svg{width:18px;height:18px}
+.chat-mic:active{background:var(--card2);color:var(--txt)}
+.chat-send{background:var(--orange);color:#fff;padding:8px}
+.chat-send svg{width:16px;height:16px}
+.chat-send:active{background:#e85f00;transform:scale(0.9)}
+.chat-send:disabled{background:var(--card3);color:var(--dim);cursor:default}
+.chat-send:disabled:active{transform:none;background:var(--card3)}
+
 /* Macro split bar (P/C/F) — flat, no gradient */
 .macro-split{display:flex;height:5px;border-radius:99px;overflow:hidden;background:var(--card3);margin-bottom:4px}
 .macro-split div{height:100%}
@@ -484,20 +536,38 @@ nav button:active{opacity:.55}
 
   <!-- COACH -->
   <section class="screen" id="scr-coach">
-    <div class="card">
-      <h3>Coach — today</h3>
-      <div id="coachToday"></div>
-      <button class="btn ghost sm" id="askBtn" style="margin-top:10px">Ask the coach anything</button>
-      <input type="text" class="wide" id="askIn" placeholder="e.g. legs sore before Saturday?" style="display:none;margin-top:10px">
-      <div id="askOut" style="margin-top:10px"></div>
+    <!-- mood / context header -->
+    <div class="coach-hero" id="coachMood">
+      <div class="coach-hero-row">
+        <div>
+          <div class="coach-greet" id="coachGreet">—</div>
+          <div class="coach-sub" id="coachSub">—</div>
+        </div>
+        <div class="coach-mood-pill" id="coachMoodPill">—</div>
+      </div>
+      <div class="coach-quick-stats" id="coachQuickStats"></div>
     </div>
-    <div class="card">
-      <h3>Recent advice</h3>
-      <div id="coachHist"></div>
+
+    <!-- chat thread -->
+    <div class="chat-thread" id="chatThread"></div>
+
+    <!-- suggested prompts -->
+    <div class="chat-prompts" id="chatPrompts">
+      <button class="prompt-chip" data-q="legs sore before today's session, swap or push?">Legs sore — push or swap?</button>
+      <button class="prompt-chip" data-q="am I eating enough protein today?">Protein on track?</button>
+      <button class="prompt-chip" data-q="I missed yesterday. what should I do?">Missed yesterday</button>
+      <button class="prompt-chip" data-q="what should I eat to close the day?">What to eat tonight</button>
     </div>
-    <div class="card">
-      <h3>Memory map · every chat, remembered</h3>
-      <div id="memMap"><p class="small">Loading…</p></div>
+
+    <!-- composer -->
+    <div class="chat-composer">
+      <button class="chat-mic" id="chatMic" title="voice (coming soon)" aria-label="voice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
+      </button>
+      <input type="text" id="askIn" class="chat-input" placeholder="Ask the coach…" autocomplete="off">
+      <button class="chat-send" id="chatSend" aria-label="send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M5 11l7-7 7 7"/></svg>
+      </button>
     </div>
   </section>
 
@@ -672,7 +742,7 @@ nav button:active{opacity:.55}
 const KEY='***';
 const DEF={
   profile:{protein:170,kcal:1850,kcalRefeed:2000,steps:10000,sleep:7.5,start:'2026-09-01',end:'2026-11-30',w0:78,wa0:null},
-  days:{},coachLog:{},asked:[],favs:[],recents:[],customs:[],offCache:[]
+  days:{},coachLog:{},coachChat:{},asked:[],favs:[],recents:[],customs:[],offCache:[]
 };
 let S=load();
 function load(){try{const r=JSON.parse(localStorage.getItem(KEY));return r?{...structuredClone(DEF),...r,profile:{...DEF.profile,...(r.profile||{})}}:structuredClone(DEF)}catch(e){return structuredClone(DEF)}}
@@ -1108,20 +1178,77 @@ function weeklyAvg(iso,endBack=0){
   return vals.length>=3?vals.reduce((a,b)=>a+b)/vals.length:null;
 }
 function renderCoach(){
-  const iso=tkey();const msgs=coachFor(iso);
-  document.getElementById('coachToday').innerHTML=msgs.map(m=>`<div class="coach-msg ${m.k}"><div class="who">Coach</div><p>${m.t}</p></div>`).join('')||'<p class="small">All quiet. Go log your session.</p>';
-  const hist=Object.keys(S.coachLog).sort().reverse().slice(0,10);
-  document.getElementById('coachHist').innerHTML=hist.map(k=>`<div class="coach-msg ${S.coachLog[k][0]?.k||''}"><div class="who">Coach · ${k}</div><p>${S.coachLog[k][0]?.t||''}</p></div>`).join('')||'<p class="small">No saved entries yet.</p>';
-  loadMemoryMap();
+  const iso=tkey();
+  const hr=new Date().getHours();
+  const greet=hr<5?'Up late —':hr<12?'Good morning,':hr<17?'Good afternoon,':hr<21?'Good evening,':'Late-night check,';
+  document.getElementById('coachGreet').textContent=greet+' Dastan';
+  const d=D(iso);
+  const p=d.protein||0, ph=phaseOf(weekOf(iso));
+  document.getElementById('coachSub').textContent=`Week ${weekOf(iso)||'prep'} · ${ph} phase · day ${(dow(iso)+6)%7+1} of 7`;
+  const pill=ph==='DELOAD'?'Deload week':ph==='LEARN'?'Learning phase':ph==='FINAL'?'Final week':ph==='PREP'?'Prep':'Building';
+  document.getElementById('coachMoodPill').textContent=pill;
+  const st=streak(), tdee=estTDEE([addDays(iso,-6),iso])||'—';
+  document.getElementById('coachQuickStats').innerHTML=`
+    <div>Protein<b>${p}/${S.profile.protein}g</b></div>
+    <div>Kcal<b>${d.kcal??'—'}</b></div>
+    <div>Sleep<b>${d.sleep??'—'}h</b></div>
+    <div>Streak<b>${st}🔥</b></div>`;
+  // load + render thread
+  if(!S.coachChat[iso]){
+    S.coachChat[iso]={day:coachFor(iso),qa:[]};
+  }else if(!S.coachChat[iso].day||!S.coachChat[iso].day.length){
+    S.coachChat[iso].day=coachFor(iso);
+  }
+  const conv=S.coachChat[iso];
+  const thread=document.getElementById('chatThread');
+  if(!conv.qa.length&&!conv.day.length){
+    thread.innerHTML=`<div class="chat-empty"><div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12c0 4.4-4 8-9 8-1.4 0-2.7-.3-3.9-.7L3 21l1.7-4.5C3.7 15 3 13.6 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"/></svg></div><p>All quiet. Ask anything — soreness, nutrition, what to do tonight.</p></div>`;
+  }else{
+    const parts=[];
+    if(conv.day.length){
+      const wd=WD[dow(iso)];
+      parts.push(`<div class="chat-day-sep">Today · ${wd}</div>`);
+      conv.day.forEach(m=>parts.push(coachRow('coach',m.t,m.k)));
+    }
+    conv.qa.forEach(q=>{
+      parts.push(coachRow('user',q.q));
+      parts.push(coachRow('coach',q.a,q.model));
+    });
+    thread.innerHTML=parts.join('');
+  }
+  // scroll to bottom
+  requestAnimationFrame(()=>{thread.scrollTop=thread.scrollHeight});
+  // toggle send vs mic based on input
+  const inp=document.getElementById('askIn'), send=document.getElementById('chatSend'), mic=document.getElementById('chatMic');
+  const sync=()=>{const has=inp.value.trim().length>0;send.style.display=has?'':'none';mic.style.display=has?'none':''};
+  inp.oninput=sync;sync();
 }
-document.getElementById('askBtn').onclick=()=>{const i=document.getElementById('askIn');i.style.display=i.style.display==='none'?'':'none';if(i.style.display==='')i.focus()};
+function coachRow(role,text,meta){
+  if(!text)return '';
+  const safe=String(text).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  if(role==='user')return `<div class="chat-row user"><div class="chat-bubble">${safe}</div></div>`;
+  const metaHtml=meta?`<span class="meta">${meta}</span>`:'';
+  return `<div class="chat-row coach"><div class="chat-avatar">B</div><div class="chat-bubble">${safe}${metaHtml}</div></div>`;
+}
+document.getElementById('chatSend').onclick=()=>askCoach();
 document.getElementById('askIn').addEventListener('keydown',async e=>{
-  if(e.key!=='Enter')return;
-  const q=e.target.value.trim();if(!q)return;
-  const iso=tkey();S.coachLog[iso]=coachFor(iso);
-  const out=document.getElementById('askOut');
-  out.innerHTML=`<div class="coach-msg info"><div class="who">You</div><p>${q}</p></div><div class="coach-msg"><div class="who">Coach</div><p style="color:var(--dim)">thinking…</p></div>`;
-  e.target.value='';
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();askCoach()}
+});
+document.querySelectorAll('.prompt-chip').forEach(b=>b.onclick=()=>{
+  const q=b.dataset.q;if(!q)return;
+  document.getElementById('askIn').value=q;askCoach();
+});
+async function askCoach(){
+  const inp=document.getElementById('askIn');
+  const q=inp.value.trim();if(!q)return;
+  inp.value='';inp.dispatchEvent(new Event('input'));
+  const iso=tkey(),conv=S.coachChat[iso]=(S.coachChat[iso]||{day:coachFor(iso),qa:[]});
+  conv.qa.push({q,a:'',model:'…',ts:Date.now()});
+  const thread=document.getElementById('chatThread');
+  // append user + thinking placeholder, render
+  const idx=conv.qa.length-1;
+  thread.insertAdjacentHTML('beforeend',coachRow('user',q)+`<div class="chat-row coach" id="thinkingRow"><div class="chat-avatar">B</div><div class="chat-bubble thinking"><span class="dots"><span></span><span></span><span></span></span></div></div>`);
+  thread.scrollTop=thread.scrollHeight;
   const d=D(iso);
   let diet='';try{const parts=[];for(const[mid,ml]of MEALS){const items=(d.meals&&d.meals[mid])||[];if(items.length)parts.push(ml+': '+items.map(f=>f.n).join(', '))}diet=parts.length?' | today\'s food: '+parts.join(' | '):' | today\'s food: nothing logged yet'}catch(_){}
   const stats=`protein ${d.protein||0}/${S.profile.protein}g, kcal ${d.kcal??'—'}, steps ${d.steps??'—'}, sleep ${d.sleep??'—'}h, week ${weekOf(iso)}, phase ${phaseOf(weekOf(iso))}, streak ${streak()}${diet}`;
@@ -1131,20 +1258,15 @@ document.getElementById('askIn').addEventListener('keydown',async e=>{
     if(r.ok){const j=await r.json();a=j.a;model=j.model}
   }catch(_){}
   if(!a)a=answer(q.toLowerCase());
+  // save to server memory
   S.asked.push({q,a,iso,model});save();
-  out.innerHTML=`<div class="coach-msg info"><div class="who">You</div><p>${q}</p></div><div class="coach-msg"><div class="who">Coach · ${model}</div><p>${a}</p></div>`;
-  loadMemoryMap();
-});
+  // update in-place
+  conv.qa[idx].a=a;conv.qa[idx].model=model;conv.qa[idx].ts=Date.now();
+  const row=document.getElementById('thinkingRow');if(row)row.outerHTML=coachRow('coach',a,model);
+  thread.scrollTop=thread.scrollHeight;
+}
 async function loadMemoryMap(){
-  const el=document.getElementById('memMap');if(!el)return;
-  try{
-    const r=await fetch('/api/memory');if(!r.ok)throw 0;
-    const j=await r.json();
-    const topics=Object.entries(j.topics||{}).sort((a,b)=>b[1]-a[1]);
-    const convos=(j.conversations||[]).slice(-8).reverse();
-    el.innerHTML=(topics.length?`<div class="chips" style="margin-bottom:10px">${topics.map(t=>`<span class="chip">${t[0]} · ${t[1]}</span>`).join('')}</div>`:'<p class="small">No conversations yet — ask the coach something above.</p>')
-      +convos.map(c=>`<div class="coach-msg" style="margin-bottom:8px"><div class="who">${c.ts.slice(0,10)} · ${c.model}</div><p style="font-size:.8rem"><b>You:</b> ${c.q.slice(0,80)}<br><b>Coach:</b> ${c.a.slice(0,120)}…</p></div>`).join('');
-  }catch(_){el.innerHTML='<p class="small">Memory map needs the server (works on the tunnel URL, not offline).</p>'}
+  // not used on the new tab — left as a stub for compatibility
 }
 function answer(q){
   const iso=tkey(),d=D(iso),wk=weekOf(iso);
