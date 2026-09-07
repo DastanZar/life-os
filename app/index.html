@@ -171,6 +171,15 @@ main > *:nth-child(8){animation-delay:420ms}
 .coach-quick-stats div{font-size:.68rem;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
 .coach-quick-stats div b{display:block;font-family:'Clash Display',system-ui,sans-serif;font-size:1.05rem;font-weight:700;color:var(--txt);letter-spacing:-.3px;margin-top:2px;text-transform:none}
 
+/* Daily check-in — Zing-style mood row */
+.coach-checkin{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-subtle)}
+.ci-label{font-size:.66rem;font-weight:700;letter-spacing:.6px;color:var(--dim);text-transform:uppercase}
+.ci-moods{display:flex;gap:6px;margin-top:7px}
+.ci-mood{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:7px 4px;font-size:.74rem;font-weight:600;color:var(--txt2);cursor:pointer;transition:all .12s}
+.ci-mood:active{transform:scale(.94)}
+.ci-mood.sel{background:var(--orange-soft);border-color:rgba(255,107,0,0.35);color:var(--orange)}
+.ci-mood.done{opacity:.75;cursor:default}
+
 /* Chat thread — iMessage-inspired, paper-bg bubbles */
 .chat-thread{display:flex;flex-direction:column;gap:8px;padding:4px 0 8px;min-height:180px}
 .chat-row{display:flex;gap:6px;align-items:flex-end;animation:chatIn .28s cubic-bezier(.22,1,.36,1) both}
@@ -546,6 +555,15 @@ nav button:active{opacity:.55}
         <div class="coach-mood-pill" id="coachMoodPill">—</div>
       </div>
       <div class="coach-quick-stats" id="coachQuickStats"></div>
+      <div class="coach-checkin">
+        <span class="ci-label">Daily check-in</span>
+        <div class="ci-moods">
+          <button class="ci-mood" data-m="low" onclick="checkin('low')">😵 Low</button>
+          <button class="ci-mood" data-m="ok" onclick="checkin('ok')">🙂 OK</button>
+          <button class="ci-mood" data-m="good" onclick="checkin('good')">😄 Good</button>
+          <button class="ci-mood" data-m="great" onclick="checkin('great')">⚡ Great</button>
+        </div>
+      </div>
     </div>
 
     <!-- chat thread -->
@@ -1222,6 +1240,34 @@ function renderCoach(){
   const inp=document.getElementById('askIn'), send=document.getElementById('chatSend'), mic=document.getElementById('chatMic');
   const sync=()=>{const has=inp.value.trim().length>0;send.style.display=has?'':'none';mic.style.display=has?'none':''};
   inp.oninput=sync;sync();
+  // daily check-in state
+  const done=d.checkin;
+  document.querySelectorAll('.ci-mood').forEach(b=>{
+    b.classList.toggle('sel',!!done&&b.dataset.m===done);
+    b.classList.toggle('done',!!done);
+  });
+}
+window.checkin=(mood)=>{
+  const iso=tkey(),d=D(iso);
+  if(d.checkin)return;
+  d.checkin=mood;save();haptic();
+  const ph=phaseOf(weekOf(iso)),isTD=[1,2,4,5,6].includes(dow(iso));
+  const R={
+    low:ph==='DELOAD'?'Low is fine — it\'s deload week, the plan already assumed this. Hit the session at half sets, treat it as moving meditation, and get to bed 30 early. Low days done gently are how streaks survive.':
+      isTD?'Logged. Today: warm up 2 min longer, cut the last set of every exercise, keep the loads you planned. A scaled session on a low day beats a skipped one — and protein target doesn\'t move.':
+      'Logged. Rest day, so the job is boring: protein on target, 8k+ steps in small chunks, water, and 30 extra minutes in bed tonight. Tomorrow re-ranks itself.',
+    ok:'Noted — an OK day still counts. Run the session exactly as written, no heroics, no cutting. Consistency at 80% effort beats spikes at 110%.',
+    good:'Good. Loads as planned, and push the last set of your weakest lift one rep past comfortable — good days are where progress is banked.',
+    great:ph==='DELOAD'?'Great — but it\'s deload, so channel it: crisp technique on every rep, and bank the energy for week '+(weekOf(iso)+1)+'. Ego in the tank, not on the bar.':'Great. Run the plan hard, and add +1 optional set to your weakest lift. Great days are for leaving the gym feeling invincible — not wrecked.'
+  };
+  const conv=S.coachChat[iso]=(S.coachChat[iso]||{day:coachFor(iso),qa:[]});
+  conv.day.push({t:R[mood],k:'info'});save();
+  const thread=document.getElementById('chatThread');
+  thread.insertAdjacentHTML('beforeend',coachRow('coach',R[mood],'check-in'));
+  thread.scrollTop=thread.scrollHeight;
+  document.querySelectorAll('.ci-mood').forEach(b=>{b.classList.toggle('sel',b.dataset.m===mood);b.classList.add('done')});
+  const sub=document.getElementById('coachSub');
+  if(sub)sub.textContent=sub.textContent.replace(/ · feeling \w+/,'')+' · feeling '+mood;
 }
 function coachRow(role,text,meta){
   if(!text)return '';
