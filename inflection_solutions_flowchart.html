@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kokoro Hindi — inflection fix: all solutions mapped</title>
+<style>
+  body{margin:0;background:var(--card,#fff);color:var(--foreground,#1a1d23);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:18px 16px 60px}
+  h1{font-size:19px;margin:4px 0 2px}
+  h2{font-size:15px;margin:26px 0 8px;border-top:1px solid var(--border,#e4e6ea);padding-top:14px}
+  .sub{color:var(--muted,#6b7280);font-size:13px;margin-bottom:14px}
+  svg{display:block;width:100%;height:auto}
+  svg text{font-family:-apple-system,'Segoe UI',sans-serif}
+  .mono{font-family:ui-monospace,Consolas,monospace}
+  .card{border:1px solid var(--border,#e4e6ea);border-radius:10px;padding:10px 14px;margin:10px 0}
+  .card b.tag{display:inline-block;font-size:11px;border-radius:6px;padding:1px 8px;margin-right:8px;
+    background:color-mix(in srgb,var(--accent,#3b6bd6) 15%,transparent);color:var(--accent,#3b6bd6)}
+  .muted{color:var(--muted,#6b7280)}
+  table{border-collapse:collapse;width:100%;font-size:12.5px}
+  th,td{border:1px solid var(--border,#e4e6ea);padding:5px 8px;text-align:left}
+  th{background:rgba(127,127,127,.08)}
+  .ok{color:#1e6b3a;font-weight:600}.warn{color:#b3541e;font-weight:600}
+</style></head><body><div class="wrap">
+<h1>Fixing inflection/energy mismatch with ElevenLabs — every solution, mapped</h1>
+<div class="sub">Grounded in the real pipeline: teardown measured r=0.06 contour correlation, 17 dB vs 32 dB energy range, +70 Hz register offset. Real file/line refs from <span class="mono">train_second.py</span> / <span class="mono">models.py</span>.</div>
+
+<!-- ===================== MASTER FLOW ===================== -->
+<h2>1 · Master decision map — where each solution lives</h2>
+<svg viewBox="0 0 1000 560">
+  <defs>
+    <marker id="m" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#6b7280"/></marker>
+    <marker id="ma" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3b6bd6"/></marker>
+  </defs>
+  <!-- problem node -->
+  <rect x="290" y="14" width="420" height="54" rx="10" fill="none" stroke="#b3261e" stroke-width="1.5"/>
+  <text x="500" y="36" text-anchor="middle" font-size="13" font-weight="600">PROBLEM: contours uncorrelated (r=0.06),</text>
+  <text x="500" y="54" text-anchor="middle" font-size="13" font-weight="600">energy squashed (17 vs 32 dB), register +70 Hz</text>
+  <path d="M500 68 L500 96" stroke="#6b7280" stroke-width="1.5" marker-end="url(#m)"/>
+
+  <!-- root causes -->
+  <rect x="60" y="96" width="270" height="66" rx="10" fill="none" stroke="#6b7280"/>
+  <text x="195" y="118" text-anchor="middle" font-size="12.5" font-weight="600">Cause 1 · style is ONE frozen photo</text>
+  <text x="195" y="136" text-anchor="middle" font-size="11.5" fill="#6b7280">(voicepack averaged EL's acting away)</text>
+  <text x="195" y="152" text-anchor="middle" font-size="11.5" fill="#6b7280">fixable by A2 / C1 / C2</text>
+  <rect x="670" y="96" width="270" height="66" rx="10" fill="none" stroke="#6b7280"/>
+  <text x="805" y="118" text-anchor="middle" font-size="12.5" font-weight="600">Cause 2 · melody has no answer key</text>
+  <text x="805" y="136" text-anchor="middle" font-size="11.5" fill="#6b7280">(F0 loss exists but blurry: JDC + unaligned,</text>
+  <text x="805" y="152" text-anchor="middle" font-size="11.5" fill="#6b7280">train_second.py:699) — fixable by B1 / B2</text>
+  <path d="M430 82 Q330 82 300 96" stroke="#6b7280" fill="none" marker-end="url(#m)"/>
+  <path d="M570 82 Q670 82 700 96" stroke="#6b7280" fill="none" marker-end="url(#m)"/>
+
+  <!-- A column -->
+  <rect x="40" y="190" width="300" height="150" rx="10" fill="color-mix(in srgb,#3b6bd6 6%,transparent)" stroke="#3b6bd6" stroke-dasharray="5 3"/>
+  <text x="190" y="212" text-anchor="middle" font-size="13" font-weight="700" fill="#3b6bd6">A · EDIT THE DIALS (no retrain)</text>
+  <text x="190" y="234" text-anchor="middle" font-size="12">A1 speed≈1.1 → un-squash pitch gestures</text>
+  <text x="190" y="256" text-anchor="middle" font-size="12">A2 STYLE BANK: many photos instead of one</text>
+  <text x="190" y="276" text-anchor="middle" font-size="12">A3 pitch-warp on audio (last resort)</text>
+  <text x="190" y="300" text-anchor="middle" font-size="11.5" fill="#6b7280">days · zero risk · helps ~30–40%</text>
+  <path d="M195 162 L190 190" stroke="#6b7280" fill="none" marker-end="url(#m)"/>
+
+  <!-- B column -->
+  <rect x="360" y="190" width="300" height="150" rx="10" fill="color-mix(in srgb,#1e6b3a 8%,transparent)" stroke="#1e6b3a" stroke-width="1.5"/>
+  <text x="510" y="212" text-anchor="middle" font-size="13" font-weight="700" fill="#1e6b3a">B · GIVE THE MELODY AN ANSWER KEY</text>
+  <text x="510" y="234" text-anchor="middle" font-size="12">B1 EL-oracle F0/N distillation ← PRIMARY</text>
+  <text x="510" y="256" text-anchor="middle" font-size="12">B2 emotion-tagged EL data (labels for free)</text>
+  <text x="510" y="278" text-anchor="middle" font-size="12">B3 word-ΔF0 viewer on teardown card</text>
+  <text x="510" y="300" text-anchor="middle" font-size="11.5" fill="#6b7280">one stage-2 retrain (~1–2 days L40S) · attacks r=0.06 + dB gap</text>
+  <path d="M805 162 L660 190" stroke="#6b7280" fill="none" marker-end="url(#m)"/>
+  <path d="M340 162 Q420 170 480 190" stroke="#6b7280" fill="none" marker-end="url(#m)"/>
+
+  <!-- C column -->
+  <rect x="680" y="190" width="290" height="150" rx="10" fill="none" stroke="#7c4fa0"/>
+  <text x="825" y="212" text-anchor="middle" font-size="13" font-weight="700" fill="#7c4fa0">C · EDIT / WAKE THE LAYER</text>
+  <text x="825" y="234" text-anchor="middle" font-size="12">C1 re-wake StyleEncoder (per-sentence s)</text>
+  <text x="825" y="256" text-anchor="middle" font-size="12">C2 intent-conditioning embedding</text>
+  <text x="825" y="278" text-anchor="middle" font-size="12">C3 bigger F0 head / swap decoder ✗ rejected</text>
+  <text x="825" y="300" text-anchor="middle" font-size="11.5" fill="#6b7280">medium surgery · stays Kokoro (C1,C2)</text>
+  <path d="M805 162 L805 190" stroke="#6b7280" fill="none" marker-end="url(#m)"/>
+
+  <!-- D -->
+  <rect x="250" y="372" width="500" height="56" rx="10" fill="none" stroke="#b3541e" stroke-dasharray="5 3"/>
+  <text x="500" y="394" text-anchor="middle" font-size="12.5" font-weight="600" fill="#b3541e">D · SWAP OUT (production hedge): route expressive lines to live EL API,</text>
+  <text x="500" y="412" text-anchor="middle" font-size="12.5" fill="#b3541e">bulk informational speech to local Kokoro — while A/B land</text>
+
+  <!-- sequence -->
+  <path d="M190 340 L190 470 L330 470" stroke="#3b6bd6" fill="none" marker-end="url(#ma)"/>
+  <path d="M510 340 L510 500 L660 500" stroke="#1e6b3a" fill="none" marker-end="url(#ma)"/>
+  <rect x="330" y="452" width="150" height="36" rx="8" fill="none" stroke="#3b6bd6"/>
+  <text x="405" y="475" text-anchor="middle" font-size="12" font-weight="600" fill="#3b6bd6">1. A1 + A2 now</text>
+  <rect x="480" y="482" width="150" height="36" rx="8" fill="none" stroke="#1e6b3a"/>
+  <text x="555" y="505" text-anchor="middle" font-size="12" font-weight="600" fill="#1e6b3a">2. B1+B2 retrain</text>
+  <path d="M480 470 L500 482" stroke="#6b7280" fill="none"/>
+  <rect x="660" y="482" width="190" height="36" rx="8" fill="none" stroke="#7c4fa0"/>
+  <text x="755" y="505" text-anchor="middle" font-size="12" font-weight="600" fill="#7c4fa0">3. C1 if still needed</text>
+  <path d="M630 500 L660 500" stroke="#6b7280" fill="none" marker-end="url(#m)"/>
+  <text x="500" y="548" text-anchor="middle" font-size="11.5" fill="#6b7280">Effort rises, certainty of fixing "wrong inflection at the wrong parts" rises the same way.</text>
+</svg>
+
+<!-- ===================== B1 DETAIL ===================== -->
+<h2>2 · B1 — EL-oracle F0/energy distillation (the answer-key fix)</h2>
+<div class="card"><b class="tag">KEY FACT</b> The fork <i>already trains</i> an F0 loss — <span class="mono">loss_F0_rec = smooth_L1(F0_real, F0_fake)/10</span> (<span class="mono">train_second.py:699</span>), added as <span class="mono">λ_F0·loss_F0_rec</span> to the generator loss (<span class="mono">:770</span>). But its teacher is <b>JDCNet on our own mel</b> — blurry, frame-level, word-blind. B1 swaps the blurry teacher for EL's real contours, aligned per word. Same trick that fixed duration.</div>
+<svg viewBox="0 0 1000 640">
+  <!-- forward path -->
+  <rect x="30" y="20" width="220" height="46" rx="8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
+  <text x="140" y="40" text-anchor="middle" font-size="12" font-weight="600">EL audio + char timings</text>
+  <text x="140" y="57" text-anchor="middle" font-size="11" fill="#6b7280">already on disk (7k rows)</text>
+  <path d="M250 43 L305 43" stroke="#6b7280" stroke-width="1.5" marker-end="url(#m)"/>
+  <rect x="305" y="20" width="210" height="46" rx="8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
+  <text x="410" y="40" text-anchor="middle" font-size="12" font-weight="600">preprocess (once, CPU)</text>
+  <text x="410" y="57" text-anchor="middle" font-size="11" fill="#6b7280">pyin F0 + RMS dB per word</text>
+  <path d="M515 43 L570 43" stroke="#6b7280" stroke-width="1.5" marker-end="url(#m)"/>
+  <rect x="570" y="20" width="200" height="46" rx="8" fill="none" stroke="#1e6b3a" stroke-width="1.5"/>
+  <text x="670" y="40" text-anchor="middle" font-size="12" font-weight="600">TARGET tensors</text>
+  <text x="670" y="57" text-anchor="middle" font-size="11" fill="#6b7280">F0_el[t], N_el[t] per frame</text>
+  <path d="M670 66 L670 110" stroke="#1e6b3a" stroke-width="1.5" marker-end="url(#m)"/>
+  <rect x="520" y="110" width="300" height="44" rx="8" fill="color-mix(in srgb,#1e6b3a 8%,transparent)" stroke="#1e6b3a"/>
+  <text x="670" y="129" text-anchor="middle" font-size="12" font-weight="600">loss_F0_oracle = Σ|F0_pred − F0_el| on EL frames</text>
+  <text x="670" y="146" text-anchor="middle" font-size="11" fill="#6b7280">same for energy N · weight λ raised from 0.1 → 1+</text>
+
+  <!-- model forward -->
+  <rect x="60" y="110" width="180" height="44" rx="8" fill="none" stroke="#6b7280"/>
+  <text x="150" y="129" text-anchor="middle" font-size="12" font-weight="600">F0Ntrain(p_en, s)</text>
+  <text x="150" y="146" text-anchor="middle" font-size="11" fill="#6b7280">the model's current guess</text>
+  <path d="M240 132 L520 132" stroke="#6b7280" stroke-width="1.5" marker-end="url(#m)"/>
+
+  <!-- backprop strip -->
+  <text x="500" y="196" text-anchor="middle" font-size="13" font-weight="700">BACKPROPAGATION — the error walks home</text>
+  <rect x="60" y="216" width="880" height="150" rx="10" fill="color-mix(in srgb,#3b6bd6 5%,transparent)" stroke="#3b6bd6" stroke-dasharray="4 3"/>
+  <g font-size="12">
+    <rect x="90" y="240" width="150" height="40" rx="8" fill="none" stroke="#b3261e"/>
+    <text x="165" y="264" text-anchor="middle">loss = |guess − truth|</text>
+    <rect x="300" y="240" width="180" height="40" rx="8" fill="none" stroke="#b3261e"/>
+    <text x="390" y="258" text-anchor="middle" font-size="11.5">"which output neuron caused it?"</text>
+    <text x="390" y="272" text-anchor="middle" font-size="11" fill="#6b7280">grad → F0Ntrain's conv heads</text>
+    <rect x="540" y="240" width="180" height="40" rx="8" fill="none" stroke="#b3261e"/>
+    <text x="630" y="258" text-anchor="middle" font-size="11.5">"which LSTM state caused that?"</text>
+    <text x="630" y="272" text-anchor="middle" font-size="11" fill="#6b7280">grad → predictor BiLSTM (models.py:647)</text>
+    <rect x="780" y="240" width="140" height="40" rx="8" fill="none" stroke="#b3261e"/>
+    <text x="850" y="258" text-anchor="middle" font-size="11.5">"which text/context?"</text>
+    <text x="850" y="272" text-anchor="middle" font-size="11" fill="#6b7280">grad → BERT (lr 1e-5) + style s</text>
+    <path d="M240 260 L300 260" stroke="#b3261e" stroke-width="1.5" marker-end="url(#m)"/>
+    <path d="M480 260 L540 260" stroke="#b3261e" stroke-width="1.5" marker-end="url(#m)"/>
+    <path d="M720 260 L780 260" stroke="#b3261e" stroke-width="1.5" marker-end="url(#m)"/>
+    <text x="500" y="308" text-anchor="middle" font-size="11.5" fill="#6b7280">each arrow = chain rule; Adam nudges weights a hair the direction that shrinks the loss; repeat ~100k steps.</text>
+    <text x="500" y="328" text-anchor="middle" font-size="11.5" fill="#6b7280">KEY: every weight touched is ALREADY trainable in stage-2 — B1 adds zero parameters, only a sharper teacher.</text>
+    <text x="500" y="348" text-anchor="middle" font-size="11.5" fill="#6b7280">Duration overrides proved this loop works: Dur loss 0.376, pacing mean-ratio 1.17→1.02.</text>
+  </g>
+
+  <!-- what changes -->
+  <text x="500" y="404" text-anchor="middle" font-size="13" font-weight="700">WHAT'S NEW vs WHAT EXISTS</text>
+  <g font-size="12">
+    <rect x="80" y="420" width="400" height="96" rx="8" fill="none" stroke="#6b7280"/>
+    <text x="280" y="442" text-anchor="middle" font-weight="600">exists today (blurry teacher)</text>
+    <text x="280" y="462" text-anchor="middle">JDC F0 from OUR mel · frame-level · word-blind</text>
+    <text x="280" y="482" text-anchor="middle">tiny λ · learned "average Hindi melody"</text>
+    <text x="280" y="502" text-anchor="middle">→ result: r=0.06 vs EL</text>
+    <rect x="520" y="420" width="400" height="96" rx="8" fill="color-mix(in srgb,#1e6b3a 8%,transparent)" stroke="#1e6b3a"/>
+    <text x="720" y="442" text-anchor="middle" font-weight="600" fill="#1e6b3a">B1 adds (sharp teacher)</text>
+    <text x="720" y="462" text-anchor="middle">pyin F0 from EL AUDIO · aligned per WORD via timestamps</text>
+    <text x="720" y="482" text-anchor="middle">+ energy N target · bigger λ · mask = EL's own frames</text>
+    <text x="720" y="502" text-anchor="middle">→ trains contour SHAPE + PLACEMENT + contrast</text>
+  </g>
+  <text x="500" y="556" text-anchor="middle" font-size="12" fill="#6b7280">Training recipe: resume stage-2 from el_distill_v3 ckpt · add loss_F0_oracle + loss_N_oracle · 4–6 epochs · L40S ≈ 12–30 h ·</text>
+  <text x="500" y="576" text-anchor="middle" font-size="12" fill="#6b7280">success metric: teardown r rises 0.06 → &gt;0.7, energy range 17 → ~30 dB, human A/B on 20 pairs.</text>
+  <text x="500" y="612" text-anchor="middle" font-size="12.5" font-weight="600">Why it can't fix everything: style s is still ONE photo — B1 sharpens the text→melody MAP, not the speaker's per-sentence mood.</text>
+</svg>
+
+<!-- ===================== C1 DETAIL ===================== -->
+<h2>3 · C1 — re-wake the StyleEncoder (per-sentence improvisation)</h2>
+<div class="card"><b class="tag">KEY FACT</b> The module already exists in the codebase — <span class="mono">StyleEncoder</span> (<span class="mono">models.py:200</span>), instantiated as <span class="mono">model.style_encoder</span> + <span class="mono">model.predictor_encoder</span> (<span class="mono">:800–803</span>), and the trainer feeds it a reference mel every batch (<span class="mono">s = model.style_encoder(st)</span>, <span class="mono">:681–684</span>). Kokoro's inference path just <b>bypasses it</b> with frozen voicepack rows. C1 = stop bypassing.</div>
+<svg viewBox="0 0 1000 480">
+  <!-- now -->
+  <text x="250" y="26" text-anchor="middle" font-size="13" font-weight="700">NOW: one frozen photo</text>
+  <rect x="90" y="44" width="320" height="110" rx="10" fill="none" stroke="#6b7280"/>
+  <text x="250" y="68" text-anchor="middle" font-size="12">text → phonemes → BERT</text>
+  <rect x="170" y="86" width="160" height="34" rx="8" fill="color-mix(in srgb,#b3261e 8%,transparent)" stroke="#b3261e"/>
+  <text x="250" y="108" text-anchor="middle" font-size="12" font-weight="600">s = voice_table[len]</text>
+  <text x="250" y="140" text-anchor="middle" font-size="11.5" fill="#6b7280">same s for excited / sad / question / statement</text>
+  <text x="250" y="146" text-anchor="middle" font-size="11.5" fill="transparent">·</text>
+
+  <!-- C1 -->
+  <text x="750" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#7c4fa0">C1: s computed fresh per sentence</text>
+  <rect x="560" y="44" width="400" height="150" rx="10" fill="none" stroke="#7c4fa0"/>
+  <text x="760" y="66" text-anchor="middle" font-size="12">3 s reference clip of the TARGET voice,</text>
+  <text x="760" y="82" text-anchor="middle" font-size="12">picked per sentence-intent (happy/serious/soft…)</text>
+  <path d="M760 88 L760 100" stroke="#7c4fa0" stroke-width="1.5" marker-end="url(#m)"/>
+  <rect x="620" y="100" width="280" height="36" rx="8" fill="color-mix(in srgb,#7c4fa0 10%,transparent)" stroke="#7c4fa0" stroke-width="1.5"/>
+  <text x="760" y="123" text-anchor="middle" font-size="12.5" font-weight="600">s = StyleEncoder(mel_ref)   ← LIVE, per call</text>
+  <text x="760" y="158" text-anchor="middle" font-size="11.5" fill="#6b7280">s is still the same 128-dim vector — predictor, decoder,</text>
+  <text x="760" y="174" text-anchor="middle" font-size="11.5" fill="#6b7280">voicepack format all unchanged. Only the SOURCE of s moves.</text>
+
+  <!-- training flow -->
+  <text x="500" y="232" text-anchor="middle" font-size="13" font-weight="700">TRAINING (so the network accepts dynamic s)</text>
+  <g font-size="12">
+    <rect x="60" y="250" width="200" height="56" rx="8" fill="none" stroke="#6b7280"/>
+    <text x="160" y="272" text-anchor="middle">EL training row</text>
+    <text x="160" y="290" text-anchor="middle" font-size="11" fill="#6b7280">(audio + text, per sentence)</text>
+    <path d="M260 278 L310 278" stroke="#6b7280" stroke-width="1.5" marker-end="url(#m)"/>
+    <rect x="310" y="250" width="220" height="56" rx="8" fill="none" stroke="#7c4fa0" stroke-width="1.5"/>
+    <text x="420" y="272" text-anchor="middle">StyleEncoder(audio) → sₜ</text>
+    <text x="420" y="290" text-anchor="middle" font-size="11" fill="#6b7280">the TRUE per-sentence style</text>
+    <path d="M530 278 L580 278" stroke="#6b7280" stroke-width="1.5" marker-end="url(#m)"/>
+    <rect x="580" y="250" width="180" height="56" rx="8" fill="none" stroke="#6b7280"/>
+    <text x="670" y="272" text-anchor="middle">predictor + decoder</text>
+    <text x="670" y="290" text-anchor="middle" font-size="11" fill="#6b7280">conditioned on sₜ (not table)</text>
+    <path d="M760 278 L810 278" stroke="#6b7280" stroke-width="1.5" marker-end="url(#m)"/>
+    <rect x="810" y="250" width="130" height="56" rx="8" fill="none" stroke="#b3261e"/>
+    <text x="875" y="272" text-anchor="middle">mel loss vs EL</text>
+    <text x="875" y="290" text-anchor="middle" font-size="11" fill="#6b7280">+ B1's F0 oracle loss</text>
+    <path d="M875 306 L875 330 L420 330 L420 306" stroke="#b3261e" fill="none" marker-end="url(#m)"/>
+    <text x="500" y="348" text-anchor="middle" font-size="11.5" fill="#6b7280">backprop updates StyleEncoder + predictor + decoder together — the encoder LEARNS what makes EL's per-sentence style</text>
+  </g>
+  <text x="500" y="382" text-anchor="middle" font-size="12" fill="#6b7280">Inference: 3 s clip per intent (record once per mood) → StyleEncoder → s → synthesize. Fallback: table row (A2 bank) when no clip chosen.</text>
+  <text x="500" y="412" text-anchor="middle" font-size="12.5" font-weight="600">Cost/risk: medium — fine-tune so all modules accept VARYING s (they've only seen table rows) · needs B1's pipeline in place · keeps Kokoro-compatible I/O.</text>
+  <text x="500" y="440" text-anchor="middle" font-size="12.5" font-weight="600" fill="#7c4fa0">Payoff: the only option that restores EL's per-sentence IMPROVISATION rather than interpolating between fixed moods.</text>
+</svg>
+
+<!-- ===================== OTHER CARDS ===================== -->
+<h2>4 · The rest, briefly</h2>
+<div class="card"><b class="tag">A1 · speed dial</b> Durations run ~15% long; every pitch gesture is time-dilated flat. <span class="mono">speed ≈ 1.1</span> at inference compresses the timeline back — gestures steepen. Free, instant, composes with everything. <span class="muted">Don't exceed ~1.1 until punctuation pauses are boosted (they're already 200 ms/sent under-paused).</span></div>
+<div class="card"><b class="tag">A2 · style bank</b> Cluster EL audio by sentence function (question / confirmation / apology / amount-reading / greeting). For each cluster, compute a style row → <b>extend the voicepack tensor</b> with new rows. At synthesis, pick row by intent. Zero architecture change — the voicepack is just a table, we add pages. <span class="muted">B2's emotion tags make cluster labels free.</span></div>
+<div class="card"><b class="tag">B2 · emotion-tagged data</b> Regenerate a variant set via EL: same sentences with <span class="mono">[excited]</span>, <span class="mono">[apologetic]</span>, <span class="mono">[whispers]</span> tags / varied stability. The tag IS the label. Feeds B1 (conditional melody) and A2 (clean clusters). Cost: EL credits only.</div>
+<div class="card"><b class="tag">B3 · ΔF0 viewer</b> Add per-word paired bars (EL peak position + swing vs model's) to the teardown card. Becomes the regression-test dashboard for B1: every retrain, check r and dB range here. Hours of work, pure JS/HTML.</div>
+<div class="card"><b class="tag">C2 · intent embedding</b> Small learned vector (question/complaint/confirmation…) injected into the predictor. Needs labels (B2), weaker than C1, but trains fast. Good middle step if C1's reference-clip UX is unwanted.</div>
+<div class="card"><b class="tag">D1 · hybrid routing</b> Voice-bot intents are finite: route greetings/apologies/objections (expressive-critical) to live EL API; run local Kokoro for bulk informational speech (amounts, dates, KYC lists). Latency/cost tradeoffs per intent class. No model work.</div>
+
+<h2>5 · Comparison matrix</h2>
+<table>
+  <tr><th>Solution</th><th>Effort</th><th>Fixes r=0.06?</th><th>Fixes 17→32 dB?</th><th>Restores improvisation?</th><th>Stays Kokoro?</th></tr>
+  <tr><td>A1 speed</td><td>minutes</td><td>partly (un-squashes)</td><td>no</td><td>no</td><td class="ok">yes</td></tr>
+  <tr><td>A2 style bank</td><td>days</td><td>partly (per-intent)</td><td>partly</td><td>interpolates only</td><td class="ok">yes</td></tr>
+  <tr><td class="ok">B1 F0/N distill</td><td>1–2 days</td><td class="ok">yes (primary)</td><td class="ok">yes</td><td>no (map, not mood)</td><td class="ok">yes</td></tr>
+  <tr><td>B2 tags data</td><td>EL credits</td><td>enables B1/C2</td><td>enables</td><td>enables</td><td class="ok">yes</td></tr>
+  <tr><td>C1 StyleEncoder</td><td>~1 wk</td><td class="ok">yes</td><td class="ok">yes</td><td class="ok">yes (the real fix)</td><td class="ok">yes (I/O unchanged)</td></tr>
+  <tr><td>C2 intent embed</td><td>days</td><td>partly</td><td>partly</td><td>coarse</td><td class="ok">yes</td></tr>
+  <tr><td>D1 routing</td><td>days (eng)</td><td>n/a (bypass)</td><td>n/a</td><td>via EL</td><td>n/a</td></tr>
+  <tr><td class="warn">C3 bigger head/decoder</td><td>weeks</td><td>—</td><td>—</td><td>—</td><td class="warn">✗ rejected (breaks architecture goal)</td></tr>
+</table>
+<div class="sub" style="margin-top:8px">Recommended order: A1+A2 (now) → B2 data gen → B1 retrain → measure on B3 viewer → C1 only if style granularity still limits. D1 parallel if production pressure.</div>
+</div></body></html>

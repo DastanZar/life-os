@@ -94,8 +94,8 @@ def rebuild_summary():
         open(SUMMARY, "w").write(txt)
     return txt
 
-def call_llm(model, messages, timeout=45):
-    body = {"model": model, "messages": messages, "temperature": 0.6, "max_tokens": 600}
+def call_llm(model, messages, timeout=45, temp=0.6, maxtok=600):
+    body = {"model": model, "messages": messages, "temperature": temp, "max_tokens": maxtok}
     if REASON: body["reasoning_effort"] = REASON
     req = urllib.request.Request(API_BASE + "/chat/completions", data=json.dumps(body).encode(),
         headers={"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"})
@@ -108,6 +108,46 @@ def call_llm(model, messages, timeout=45):
     if not content:
         raise RuntimeError(f"{model} returned empty content")
     return content
+
+# ---------- FOOD SCAN (vision) ----------
+SCAN_PROMPT = (
+  "You are a precision nutrition vision engine. Analyze the food image and return STRICT JSON only — "
+  "no markdown, no prose outside the JSON object.\n\n"
+  "MODE DETECTION: if the image shows a packaged product (especially a nutrition label/ingredients panel), "
+  "kind='packet': READ THE LABEL DIGITS EXACTLY — do not guess from the brand. Compute kcal/protein for the "
+  "portion actually visible or stated (per 100g × grams eaten). If no label is legible, say so in warnings and "
+  "estimate from product identity with confidence<=0.5.\n"
+  "If it shows prepared food on a plate/bowl, kind='plate': identify each component, estimate its cooked weight "
+  "in grams from visual cues (plate size, spoon, hand if present), then kcal from standard food-composition "
+  "values (USDA/IFCT/NIN). Indian vegetarian dishes: use realistic ghee/oil amounts — cooked dishes carry hidden fat.\n"
+  "If both, kind='mixed'.\n\n"
+  "ACCURACY RULES: kcal = grams × per-100g value, computed, not vibes. Protein to 1 decimal. "
+  "confidence per item: 0.9+ label read directly, 0.7-0.9 clear familiar food, <0.7 ambiguous — never hide uncertainty. "
+  "If the image is not food, return {\"kind\":\"not_food\",\"items\":[],\"total_kcal\":0,\"total_protein\":0,\"warnings\":[\"not food\"]}.\n\n"
+  "SCHEMA: {\"kind\":\"packet|plate|mixed|not_food\",\"items\":[{\"name\":\"\",\"qty_g\":int,\"kcal\":num,\"protein_g\":num,\"confidence\":0-1,\"basis\":\"label|standard-table|visual-estimate\"}],\"total_kcal\":num,\"total_protein\":num,\"warnings\":[\"\"],\"label_text\":\"exact label numbers if read, else empty\"}"
+)
+
+def scan_image(img_data_url, hint=""):
+    msgs = [{"role": "system", "content": SCAN_PROMPT},
+            {"role": "user", "content": [
+                {"type": "text", "text": ("Context from user: " + hint[:200]) if hint else "Analyze this food image."},
+                {"type": "image_url", "image_url": {"url": img_data_url[:3_500_000]}}]}]
+    last_err = None
+    for attempt in range(2):
+        for m in ["glm-5.3-flash", "qwen3.8-flash"]:
+            try:
+                raw = call_llm(m, msgs, timeout=90, temp=0.1, maxtok=900)
+                s = raw.find("{"); e = raw.rfind("}")
+                if s < 0 or e < 0: raise RuntimeError("no JSON in response")
+                d = json.loads(raw[s:e+1])
+                if not isinstance(d.get("items"), list): raise RuntimeError("missing items")
+                d["model"] = m
+                return d, None
+            except Exception as ex:
+                last_err = f"{m}: {ex}"
+        if attempt == 0: time.sleep(6)
+    return None, last_err
+
 
 def coach_answer(q, stats):
     sys_prompt = (
@@ -162,8 +202,21 @@ class H(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
-        if not self.path.startswith("/api/ask"): return self._json(404, {"error": "not found"})
         if self.headers.get("X-Coach-Token") != TOKEN: return self._json(401, {"error": "bad token"})
+        if self.path.startswith("/api/scan"):
+            try:
+                n = int(self.headers.get("Content-Length", 0))
+                if n > 6_000_000: return self._json(413, {"error": "image too large (max ~4MB)"})
+                body = json.loads(self.rfile.read(n) or b"{}")
+            except Exception: return self._json(400, {"error": "bad json"})
+            img = str(body.get("image", ""))
+            if not img.startswith("data:image/"): return self._json(400, {"error": "image must be a data:image/* URL"})
+            t0 = time.time()
+            res, err = scan_image(img, str(body.get("hint", "")))
+            if res is None: return self._json(502, {"error": err or "scan failed"})
+            res["ms"] = int((time.time() - t0) * 1000)
+            return self._json(200, res)
+        if not self.path.startswith("/api/ask"): return self._json(404, {"error": "not found"})
         try:
             n = int(self.headers.get("Content-Length", 0)); body = json.loads(self.rfile.read(n) or b"{}")
         except Exception: return self._json(400, {"error": "bad json"})

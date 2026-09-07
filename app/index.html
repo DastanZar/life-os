@@ -180,6 +180,12 @@ nav button.on .ic{transform:translateY(-1px)}
 #pickList{scrollbar-width:none}
 #pickList::-webkit-scrollbar{display:none}
 
+/* Scanner Bottom Sheet */
+#scanOverlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:60;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
+#scanOverlay.on{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s}
+#scanSheet{background:var(--bg2);width:100%;max-width:440px;max-height:88vh;border-radius:26px 26px 0 0;padding:20px 22px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;box-shadow:0 -16px 48px rgba(0,0,0,.9);border-top:1px solid var(--line);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
+#scanOverlay.on #scanSheet{transform:none}
+
 .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:#1f2330;border:1px solid rgba(255,255,255,0.15);box-shadow:0 12px 28px rgba(0,0,0,0.7);color:#fff;font-weight:700;font-size:.82rem;padding:10px 20px;border-radius:999px;opacity:0;transition:opacity .2s,transform .25s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:50;white-space:nowrap}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(-8px)}
 </style>
@@ -377,8 +383,15 @@ nav button.on .ic{transform:translateY(-1px)}
         </div>
         <span class="chip fire" id="diaryTotal" style="text-transform:none;font-weight:600">0 kcal · 0g P</span>
       </div>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <button class="btn sm primary" onclick="openScanner()" style="flex:1"><span style="font-size:.9rem">📷</span> Scan Meal</button>
+        <button class="btn sm" id="addFoodBtn" style="flex:1">+ Quick Search</button>
+      </div>
       <div id="diaryBody" class="diary-accordion"></div>
-      <button class="btn sm" id="addFoodBtn" style="margin-top:12px;width:100%">+ Quick Search & Log Food</button>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--line-subtle)">
+        <span class="small" style="color:var(--txt2)" id="weekSummary">0 scanned this week</span>
+        <span class="small" style="color:var(--txt2)" id="monthSummary">0 scanned this month</span>
+      </div>
     </div>
 
     <!-- Workout Session Card (Hevy / Strong style) -->
@@ -527,8 +540,58 @@ nav button.on .ic{transform:translateY(-1px)}
       <h3>About</h3>
       <p class="small"><b style="color:var(--green)">No ads. No paywall. No account.</b> Your data lives on this phone — export anytime. Built from <span class="kbd">PLAN-HOME-MAX.md</span> v1.0. Coach rules are deterministic and offline; the ask-coach field uses glm-5.3-flash/qwen3.8-max when the server is reachable. Install: Chrome menu → Add to Home screen.</p>
     </div>
-  </section>
-</main>
+    </section>
+    </main>
+
+    <!-- SCANNER OVERLAY -->
+    <div id="scanOverlay">
+    <div id="scanSheet">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h3 id="scanTitle" style="margin:0">📷 Scan Food</h3>
+        <button class="tog" onclick="closeScanner()" style="padding:6px 12px">✕</button>
+      </div>
+      <div id="scanStep1">
+        <p class="small" style="color:var(--txt2);margin:0 0 10px">Take a photo or pick one from your gallery. For packets: get the nutrition label in frame. For plates: top-down or side angle works best.</p>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button class="btn sm primary" onclick="captureCamera()" style="flex:1">📸 Camera</button>
+          <button class="btn sm" onclick="pickFile()" style="flex:1">🖼 Gallery</button>
+        </div>
+        <input type="file" id="scanFile" accept="image/*" style="display:none" onchange="onFileScan(this)">
+        <video id="scanVideo" autoplay playsinline style="width:100%;border-radius:12px;background:#000;display:none"></video>
+        <canvas id="scanCanvas" style="display:none"></canvas>
+        <img id="scanPreview" style="width:100%;border-radius:12px;display:none">
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <input type="text" id="scanHint" class="wide" placeholder="Optional hint: 'dinner', 'chai + biscuit', 'protein bar'" style="flex:1">
+        </div>
+      </div>
+      <div id="scanStep2" style="display:none">
+        <div id="scanPreview2" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:10px"></div>
+        <div id="scanStatus" class="small" style="color:var(--txt2);margin-bottom:8px">Analyzing…</div>
+        <div id="scanResult" style="display:none">
+          <div style="background:var(--bg-2);border:1px solid var(--line-subtle);border-radius:12px;padding:10px;margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span class="small" style="color:var(--txt2);font-weight:700" id="scanKind">—</span>
+              <span class="chip fire" id="scanTotal" style="font-variant-numeric:tabular-nums">0 kcal · 0g P</span>
+            </div>
+            <div id="scanItems"></div>
+            <div id="scanWarnings" style="margin-top:6px"></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <select id="scanMeal" class="wide" style="flex:1">
+              <option value="breakfast">🌅 Breakfast</option>
+              <option value="lunch">☀️ Lunch</option>
+              <option value="dinner" selected>🌙 Dinner</option>
+              <option value="snacks">🍎 Snacks</option>
+            </select>
+            <button class="btn sm primary" onclick="approveScan()" style="flex:1">✓ Add to diary</button>
+          </div>
+          <button class="tog" onclick="retakeScan()" style="width:100%;margin-top:6px">↺ Retake</button>
+        </div>
+        <div id="scanError" style="display:none;padding:12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:12px;color:var(--red);font-size:.82rem">
+        </div>
+      </div>
+    </div>
+    </div>
 <nav>
   <button data-s="today" class="on"><span class="ic">◎</span>Today</button>
   <button data-s="coach"><span class="ic">✳</span>Coach</button>
@@ -691,7 +754,10 @@ function renderToday(){
 
   // Render Food Diary
   renderDiary(iso);
-
+  // Scan summaries
+  const st=scanTotals(iso),wm=weekTotals(),m=monthTotals();
+  const weekEl=document.getElementById('weekSummary'),monthEl=document.getElementById('monthSummary');
+  if(weekEl)weekEl.textContent=(wm.scans?wm.scans+' scanned this week':'');if(monthEl)monthEl.textContent=(m.scans?m.scans+' scanned this month':'');
   // Daily Vitals Tiles
   setVal('inKcal',d.kcal);setVal('inSteps',d.steps);setVal('inSleep',d.sleep);setVal('inWater',d.water);
   document.getElementById('suppChips').innerHTML=SUPPS.map(s=>`<button class="chip-action ${d.supps[s[0]]?'on':''}" style="${d.supps[s[0]]?'background:var(--emerald-glow);border-color:rgba(16,185,129,0.4);color:#34d399':''}" onclick="togSupp('${iso}','${s[0]}')">${d.supps[s[0]]?'✓':'○'} ${s[1]}</button>`).join('');
@@ -756,7 +822,15 @@ window.addWater=(delta)=>{const iso=tkey(),d=D(iso);d.water=Math.max(0,(d.water|
 
 /* ============ FOOD DIARY ENGINE ============ */
 function mealTotals(iso){const d=S.days[iso];if(!d||!d.meals)return{kcal:0,p:0,n:0};
-  let kcal=0,p=0,n=0;for(const m in d.meals)for(const f of d.meals[m]){kcal+=f.kcal;p+=f.p;n++}return{kcal,p,n}}
+  let kcal=0,p=0,n=0;for(const m in d.meals)for(const f of d.meals[m]){kcal+=f.kcal||0;p+=f.p||0;n++}return{kcal,p,n}}
+function scanTotals(iso){const d=S.days[iso];if(!d||!d.meals)return{items:0,kcal:0};
+  let items=0,kcal=0;for(const m in d.meals)for(const f of d.meals[m]){if(f.scan){items++;kcal+=f.kcal||0}}return{items,kcal}}
+function monthTotals(){const now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),1);let kcal=0,p=0,scans=0;
+  for(let i=0;i<31;i++){const iso=dkey(new Date(start.getTime()+i*864e5));const d=S.days[iso];if(!d||!d.meals)continue;
+    for(const m in d.meals)for(const f of d.meals[m]){kcal+=f.kcal||0;p+=f.p||0;if(f.scan)scans++}}return{kcal,p,scans}}
+function weekTotals(){const t=today();const wd=dow(t);const mon=addDays(t,-(wd||7));let kcal=0,p=0,scans=0;
+  for(let i=0;i<7;i++){const iso=addDays(mon,i);const d=S.days[iso];if(!d||!d.meals)continue;
+    for(const m in d.meals)for(const f of d.meals[m]){kcal+=f.kcal||0;p+=f.p||0;if(f.scan)scans++}}return{kcal,p,scans}}
 function syncDiary(iso){const d=D(iso),t=mealTotals(iso);
   d.kcal=t.kcal;d.protein=Math.round(t.p);save()}
 window.renderDiary=(iso)=>{const d=D(iso),t=mealTotals(iso);
@@ -815,11 +889,13 @@ function renderPickList(){
       <span class="chip amber" style="font-size:.7rem;padding:2px 7px">${f.p}g P</span>
       <button class="star ${f.fav?'on':''}" onclick="event.stopPropagation();togFav('${f.name.replace(/'/g,"\\'")}')">${f.fav?'★':'☆'}</button>
     </div>`).join('')+'</div>'}
-window.addFood=(iso,meal,name)=>{const lib=FOODS.find(x=>x[0]===name);const c=(S.customs||[]).find(x=>x.name===name);
-  const kcal=lib?lib[1]:(c?c.kcal:0),p=lib?lib[2]:(c?c.p:0);if(!kcal)return;
-  D(iso).meals[meal].push({n:name,kcal,p});
+window.addFood=(iso,meal,name,kcal,p,extra)=>{extra=extra||{};const lib=FOODS.find(x=>x[0]===name);const c=(S.customs||[]).find(x=>x.name===name);
+  const fk=lib?lib[1]:(c?c.kcal:0),fp=lib?lib[2]:(c?c.p:0);const item={n:name,kcal:(kcal||fk)||0,p:(p||fp)||0,ts:extra.ts||Date.now(),scan:!!extra.scan,confidence:extra.confidence||null,basis:extra.basis||null,warnings:extra.warnings?extra.warnings.slice(0,5):null};
+  if(extra.items&&extra.items.length){extra.items.forEach(it=>{D(iso).meals[meal].push({...it,ts:item.ts,scan:true})})}
+  else{D(iso).meals[meal].push(item)}
   S.recents=S.recents||[];S.recents=[name,...(S.recents||[]).filter(x=>x!==name)].slice(0,12);
-  syncDiary(iso);closePicker();renderToday();haptic(12);toast('+ '+name)};
+  if(extra.source==='scan')S.scans=S.scans||[];
+  syncDiary(iso);renderToday();haptic(12);toast('+ logged')};
 window.togFav=(name)=>{S.favs=S.favs||[];const i=S.favs.indexOf(name);
   if(i>=0)S.favs.splice(i,1);else S.favs.push(name);save();renderPickList()};
 window.addCustomFood=()=>{const name=document.getElementById('cfName').value.trim();
@@ -828,6 +904,22 @@ window.addCustomFood=()=>{const name=document.getElementById('cfName').value.tri
   S.customs=S.customs||[];if(!S.customs.find(c=>c.name===name))S.customs.push({name,kcal,p:p||0});
   save();document.getElementById('cfName').value='';document.getElementById('cfKcal').value='';document.getElementById('cfP').value='';
   renderPickList();toast(name+' saved')};
+
+/* ============ FOOD SCANNER (vision) ============ */
+let SCAN_RESULT=null, SCAN_STREAM=null;
+window.openScanner=()=>{document.getElementById('scanOverlay').classList.add('on');resetScanner()};
+window.closeScanner=()=>{document.getElementById('scanOverlay').classList.remove('on');stopCamera()};
+window.captureCamera=async()=>{try{SCAN_STREAM=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});const v=document.getElementById('scanVideo');v.srcObject=SCAN_STREAM;v.style.display='';document.getElementById('scanPreview').style.display='none'}catch(x){toast('camera blocked — use gallery instead')}};
+window.pickFile=()=>document.getElementById('scanFile').click();
+window.onFileScan=async(input)=>{const f=input.files[0];if(!f)return;const r=await blobToDataURL(f);document.getElementById('scanPreview').src=r;document.getElementById('scanPreview').style.display='';stopCamera();runScan(r)};
+function blobToDataURL(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(file)})}
+function stopCamera(){if(SCAN_STREAM){SCAN_STREAM.getTracks().forEach(t=>t.stop());SCAN_STREAM=null}document.getElementById('scanVideo').style.display='none'}
+window.retakeScan=()=>resetScanner();
+function resetScanner(){SCAN_RESULT=null;document.getElementById('scanStep1').style.display='';document.getElementById('scanStep2').style.display='none';document.getElementById('scanFile').value='';document.getElementById('scanPreview').style.display='none';document.getElementById('scanHint').value=''}
+async function runScan(dataUrl){document.getElementById('scanStep1').style.display='none';document.getElementById('scanStep2').style.display='';document.getElementById('scanStatus').textContent='Analyzing…';document.getElementById('scanResult').style.display='none';document.getElementById('scanError').style.display='none';const preview=document.getElementById('scanPreview');if(preview.src&&preview.style.display!=='none'){document.getElementById('scanPreview2').src=preview.src}else{document.getElementById('scanPreview2').innerHTML='<div style="padding:40px;text-align:center;color:var(--dim)">image captured</div>'}
+  try{const r=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json','X-Coach-Token':'bodyos-local'},body:JSON.stringify({image:dataUrl,hint:document.getElementById('scanHint').value})});const d=await r.json();if(!r.ok)throw new Error(d.error||'scan failed');SCAN_RESULT=d;renderScanResult(d)}catch(x){document.getElementById('scanError').textContent=x.message||'scan failed';document.getElementById('scanError').style.display='';document.getElementById('scanStatus').textContent='failed'}}
+function renderScanResult(d){document.getElementById('scanStatus').textContent=(d.ms?`Done in ${d.ms}ms · `:'')+(d.model?`via ${d.model}`:'');document.getElementById('scanKind').textContent=(d.kind||'?').toUpperCase();document.getElementById('scanTotal').textContent=`${Math.round(d.total_kcal)} kcal · ${(d.total_protein||0).toFixed(1)}g P`;document.getElementById('scanItems').innerHTML=(d.items||[]).map((it,i)=>`<div class="food-row" style="font-size:.82rem"><span class="food-name">${it.name||'item '+(i+1)}</span><div class="food-badges"><span class="badge-pill kcal">${it.qty_g||'?'}g · ${Math.round(it.kcal)} kcal</span><span class="badge-pill prot">${(it.protein_g||0).toFixed(1)}g P</span><span class="chip" style="font-size:.65rem;padding:2px 6px">${Math.round((it.confidence||0)*100)}% ${it.basis||''}</span></div></div>`).join('');const warns=(d.warnings||[]).filter(Boolean);document.getElementById('scanWarnings').innerHTML=warns.length?warns.map(w=>`<div class="small" style="color:var(--orange);margin-top:2px">⚠ ${w}</div>`).join(''):'';document.getElementById('scanResult').style.display=''}
+window.approveScan=()=>{if(!SCAN_RESULT)return;const iso=tkey(),meal=document.getElementById('scanMeal').value;SCAN_RESULT.items=SCAN_RESULT.items||[];if(!SCAN_RESULT.items.length&&SCAN_RESULT.total_kcal){SCAN_RESULT.items.push({name:'Scanned meal',qty_g:0,kcal:SCAN_RESULT.total_kcal,protein_g:SCAN_RESULT.total_protein||0,confidence:SCAN_RESULT.items?.[0]?.confidence||0.7,basis:'visual-estimate',warnings:SCAN_RESULT.warnings})}addFood(iso,meal,'scan',SCAN_RESULT.total_kcal,SCAN_RESULT.total_protein,{ts:Date.now(),scan:true,confidence:SCAN_RESULT.items?.[0]?.confidence||null,basis:SCAN_RESULT.items?.[0]?.basis||null,warnings:SCAN_RESULT.warnings,items:SCAN_RESULT.items,source:'scan'});closeScanner();renderToday()};
 
 window.togSupp=(iso,k)=>{const d=D(iso);d.supps[k]=!d.supps[k];save();renderToday()};
 window.togPrep=(iso,i)=>{const d=D(iso);d.prep[i]=!d.prep[i];save();renderToday()};
