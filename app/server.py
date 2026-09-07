@@ -11,7 +11,7 @@ Memory: every Q&A appended to coach-memory/conversations.jsonl; a rolling
 summary + topic map rebuilt each call and injected into the next prompt,
 so the coach remembers everything you've ever asked it.
 """
-import json, os, re, threading, time, urllib.request, urllib.error
+import json, os, re, threading, time, urllib.request, urllib.error, urllib.parse
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 API_BASE = os.environ.get("BAI_BASE", "https://api.b.ai/v1")
@@ -124,7 +124,7 @@ SCAN_PROMPT = (
   "ACCURACY RULES: kcal = grams × per-100g value, computed, not vibes. Protein to 1 decimal. "
   "confidence per item: 0.9+ label read directly, 0.7-0.9 clear familiar food, <0.7 ambiguous — never hide uncertainty. "
   "If the image is not food, return {\"kind\":\"not_food\",\"items\":[],\"total_kcal\":0,\"total_protein\":0,\"warnings\":[\"not food\"]}.\n\n"
-  "SCHEMA: {\"kind\":\"packet|plate|mixed|not_food\",\"items\":[{\"name\":\"\",\"qty_g\":int,\"kcal\":num,\"protein_g\":num,\"confidence\":0-1,\"basis\":\"label|standard-table|visual-estimate\"}],\"total_kcal\":num,\"total_protein\":num,\"warnings\":[\"\"],\"label_text\":\"exact label numbers if read, else empty\"}"
+  "SCHEMA: {\"kind\":\"packet|plate|mixed|not_food\",\"items\":[{\"name\":\"\",\"qty_g\":int,\"kcal\":num,\"protein_g\":num,\"carbs_g\":num,\"fat_g\":num,\"confidence\":0-1,\"basis\":\"label|standard-table|visual-estimate\"}],\"total_kcal\":num,\"total_protein\":num,\"total_carbs\":num,\"total_fat\":num,\"warnings\":[\"\"],\"label_text\":\"exact label numbers if read, else empty\"}"
 )
 
 def scan_image(img_data_url, hint=""):
@@ -147,6 +147,44 @@ def scan_image(img_data_url, hint=""):
                 last_err = f"{m}: {ex}"
         if attempt == 0: time.sleep(6)
     return None, last_err
+
+# ---------- BARCODE LOOKUP (Open Food Facts, free, no key) ----------
+def off_get(url):
+    req = urllib.request.Request(url, headers={"User-Agent": "BODY-OS-PWA/1.0 (personal use)"})
+    with urllib.request.urlopen(req, timeout=12) as r:
+        return json.loads(r.read())
+
+def barcode_lookup(code):
+    """Exact barcode -> OFF product nutriments per 100g. status 0 = not in DB."""
+    if not re.fullmatch(r"\d{8,14}", code or ""): return None, "invalid barcode"
+    try:
+        d = off_get(f"https://world.openfoodfacts.org/api/v2/product/{code}.json?fields=product_name,nutriments,serving_quantity,quantity,brands")
+    except Exception as e:
+        return None, f"OFF lookup failed: {e}"
+    if not d.get("status"): return None, "not in Open Food Facts"
+    p = d.get("product") or {}
+    n = p.get("nutriments") or {}
+    kcal = n.get("energy-kcal_100g")
+    if kcal is None: return None, "in DB but no kcal data"
+    return {"name": p.get("product_name") or code, "brands": p.get("brands") or "",
+            "per100": {"kcal": kcal, "p": n.get("proteins_100g") or 0,
+                       "c": n.get("carbohydrates_100g") or 0, "f": n.get("fat_100g") or 0},
+            "serving_g": p.get("serving_quantity") or p.get("quantity") or None}, None
+
+def off_search(term):
+    try:
+        d = off_get("https://world.openfoodfacts.org/cgi/search.pl?search_terms=" + urllib.parse.quote(term) +
+                    "&search_simple=1&action=process&json=1&page_size=8&fields=code,product_name,brands,nutriments,serving_quantity")
+    except Exception as e:
+        return None, f"OFF search failed: {e}"
+    out = []
+    for p in d.get("products") or []:
+        n = p.get("nutriments") or {}
+        if n.get("energy-kcal_100g") is None: continue
+        out.append({"code": p.get("code"), "name": p.get("product_name") or "", "brands": p.get("brands") or "",
+                    "per100": {"kcal": n["energy-kcal_100g"], "p": n.get("proteins_100g") or 0,
+                               "c": n.get("carbohydrates_100g") or 0, "f": n.get("fat_100g") or 0}})
+    return out, None
 
 
 def coach_answer(q, stats):
@@ -196,6 +234,17 @@ class H(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/api/health"):
             return self._json(200, {"ok": True, "models": MODELS, "memory": os.path.exists(CONVO)})
+        if self.path.startswith("/api/barcode"):
+            from urllib.parse import urlparse, parse_qs
+            code = (parse_qs(urlparse(self.path).query).get("code") or [""])[0]
+            res, err = barcode_lookup(code)
+            return self._json(200 if res else 404, res or {"error": err})
+        if self.path.startswith("/api/foodsearch"):
+            from urllib.parse import urlparse, parse_qs
+            q = (parse_qs(urlparse(self.path).query).get("q") or [""])[0]
+            if len(q) < 3: return self._json(400, {"error": "query too short"})
+            res, err = off_search(q)
+            return self._json(200 if res is not None else 502, {"results": res} if res is not None else {"error": err})
         if self.path.startswith("/api/memory"):
             rows = recent(10**6)
             return self._json(200, {"conversations": rows, "topics": json.load(open(TOPICS)) if os.path.exists(TOPICS) else {}, "summary": rebuild_summary()})

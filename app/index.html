@@ -387,6 +387,7 @@ nav button.on .ic{transform:translateY(-1px)}
         <button class="btn sm primary" onclick="openScanner()" style="flex:1"><span style="font-size:.9rem">📷</span> Scan Meal</button>
         <button class="btn sm" id="addFoodBtn" style="flex:1">+ Quick Search</button>
       </div>
+      <div id="macroSplit" style="display:none;margin-bottom:10px"></div>
       <div id="diaryBody" class="diary-accordion"></div>
       <div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--line-subtle)">
         <span class="small" style="color:var(--txt2)" id="weekSummary">0 scanned this week</span>
@@ -551,13 +552,16 @@ nav button.on .ic{transform:translateY(-1px)}
         <button class="tog" onclick="closeScanner()" style="padding:6px 12px">✕</button>
       </div>
       <div id="scanStep1">
-        <p class="small" style="color:var(--txt2);margin:0 0 10px">Take a photo or pick one from your gallery. For packets: get the nutrition label in frame. For plates: top-down or side angle works best.</p>
+        <p class="small" style="color:var(--txt2);margin:0 0 10px">Packet? Scan the barcode for exact label numbers. Plate? Photo scan estimates from food tables.</p>
         <div style="display:flex;gap:6px;margin-bottom:10px">
-          <button class="btn sm primary" onclick="captureCamera()" style="flex:1">📸 Camera</button>
+          <button class="btn sm primary" onclick="startBarcode()" style="flex:1">📱 Barcode</button>
+          <button class="btn sm" onclick="captureCamera()" style="flex:1">📸 Photo</button>
           <button class="btn sm" onclick="pickFile()" style="flex:1">🖼 Gallery</button>
         </div>
         <input type="file" id="scanFile" accept="image/*" style="display:none" onchange="onFileScan(this)">
         <video id="scanVideo" autoplay playsinline style="width:100%;border-radius:12px;background:#000;display:none"></video>
+        <div id="bcHint" class="small" style="display:none;color:var(--txt2);text-align:center;padding:6px">Point at the barcode…</div>
+        <div id="bcResult" style="display:none"></div>
         <canvas id="scanCanvas" style="display:none"></canvas>
         <img id="scanPreview" style="width:100%;border-radius:12px;display:none">
         <div style="margin-top:8px;display:flex;gap:6px">
@@ -614,8 +618,10 @@ nav button.on .ic{transform:translateY(-1px)}
       <p class="small" style="font-weight:700;color:var(--txt2);margin-bottom:4px">QUICK SAVE — your own food</p>
       <div style="display:flex;gap:6px">
         <input type="text" id="cfName" placeholder="e.g. Mom's pulao" style="flex:2;min-width:0">
-        <input type="number" id="cfKcal" placeholder="kcal" inputmode="numeric" style="width:70px">
-        <input type="number" id="cfP" placeholder="P g" inputmode="numeric" style="width:60px">
+        <input type="number" id="cfKcal" placeholder="kcal" inputmode="numeric" style="width:64px">
+        <input type="number" id="cfP" placeholder="P" inputmode="decimal" style="width:44px">
+        <input type="number" id="cfC" placeholder="C" inputmode="decimal" style="width:44px">
+        <input type="number" id="cfF" placeholder="F" inputmode="decimal" style="width:44px">
         <button class="btn sm" onclick="addCustomFood()">Save</button>
       </div>
     </div>
@@ -627,7 +633,7 @@ nav button.on .ic{transform:translateY(-1px)}
 const KEY='***';
 const DEF={
   profile:{protein:170,kcal:1850,kcalRefeed:2000,steps:10000,sleep:7.5,start:'2026-09-01',end:'2026-11-30',w0:78,wa0:null},
-  days:{},coachLog:{},asked:[],favs:[],recents:[],customs:[]
+  days:{},coachLog:{},asked:[],favs:[],recents:[],customs:[],offCache:[]
 };
 let S=load();
 function load(){try{const r=JSON.parse(localStorage.getItem(KEY));return r?{...structuredClone(DEF),...r,profile:{...DEF.profile,...(r.profile||{})}}:structuredClone(DEF)}catch(e){return structuredClone(DEF)}}
@@ -657,14 +663,15 @@ const sessionFor=iso=>WEEK[(dow(iso)+6)%7][1];
 const PROTEIN_CHIPS=[['Egg',6],['Scoop whey',24],['Paneer 100g',18],['Curd 150g',12],['Milk 250ml',8],['Soy 50g',26],['Dal 1c',7],['Tofu 100g',12],['PB 2tb',8]];
 /* ============ FOOD DIARY (veg + egg) ============ */
 const MEALS=[['breakfast','Breakfast'],['lunch','Lunch'],['dinner','Dinner'],['snacks','Snacks']];
+/* FOODS: [name, kcal, protein_g, carbs_g, fat_g] per stated serving — Indian veg+egg, cooked values */
 const FOODS=[
- ['3 eggs',215,19],['2 eggs',145,13],['Egg bhurji (3 eggs)',350,22],['Egg omelette 2-egg',180,14],
- ['Whey scoop',120,24],['Paneer 100g',265,18],['Paneer bhurji 150g',330,24],['Tofu 100g',145,12],
- ['Curd 200g',120,12],['Greek yogurt 170g',100,17],['Milk 250ml',150,8],['Soy chunks 50g',170,26],
- ['Dal 1 cup',180,12],['Rajma 1 cup',210,13],['Chana 1 cup',270,15],['Sprouts 1 cup',60,6],
- ['Roti',100,3],['Rice 1 cup cooked',200,4],['Oats 60g',220,8],['Peanut butter 2 tbsp',190,8],
- ['Peanuts 30g',170,8],['Almonds 20g',115,4],['Sattu drink 30g',110,7],['Milk tea (sugar)',80,2],
- ['Sabzi 1 cup',120,3],['Kachumber salad',40,2],['Banana',105,1],['Apple',95,0]
+ ['3 eggs',215,19,1.5,15],['2 eggs',145,13,1,10],['Egg bhurji (3 eggs)',350,22,3,25],['Egg omelette 2-egg',180,14,1,12],
+ ['Whey scoop',120,24,3,1.5],['Paneer 100g',265,18,4,20],['Paneer bhurji 150g',330,24,8,22],['Tofu 100g',145,12,3,9],
+ ['Curd 200g',120,12,9,5],['Greek yogurt 170g',100,17,6,0.5],['Milk 250ml',150,8,12,8],['Soy chunks 50g',170,26,12,2.5],
+ ['Dal 1 cup',180,12,26,3],['Rajma 1 cup',210,13,33,3.5],['Chana 1 cup',270,15,40,5],['Sprouts 1 cup',60,6,10,0.5],
+ ['Roti',100,3,18,2],['Rice 1 cup cooked',200,4,44,0.5],['Oats 60g',220,8,36,4],['Peanut butter 2 tbsp',190,8,6,16],
+ ['Peanuts 30g',170,8,5,14.5],['Almonds 20g',115,4,4,10],['Sattu drink 30g',110,7,18,1],['Milk tea (sugar)',80,2,10,4],
+ ['Sabzi 1 cup',120,3,10,7],['Kachumber salad',40,2,6,1.5],['Banana',105,1,27,0.4],['Apple',95,0,25,0.3]
 ];
 const SUPPS=[['creatine','Creatine 5g'],['whey','Whey'],['b12','B12 multivitamin']];
 const PREPS=[['Tape measure + Day-0 waist logged'],['Day-0 photos (front/side/back)'],['Doorway pull-up bar ordered'],['Whey + creatine + B12 ordered'],['Kitchen scale ordered (2 wks)'],['Gym: which one, cost, trial?']];
@@ -690,7 +697,9 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   if(b.dataset.s==='set')renderSet();
   if(b.dataset.s==='today')renderToday();
 });
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),1400)}
+function toast(m,actLabel,actFn){const t=document.getElementById('toast');t.innerHTML=actLabel?`${m} <button id="toastAct" style="margin-left:10px;background:var(--orange);color:#111;border:none;border-radius:99px;padding:3px 12px;font-weight:800;font-size:.75rem;font-family:inherit;cursor:pointer">${actLabel}</button>`:m;t.classList.add('on');clearTimeout(toast._t);
+  if(actLabel&&actFn){const b=document.getElementById('toastAct');if(b)b.onclick=()=>{actFn();t.classList.remove('on')}}
+  toast._t=setTimeout(()=>t.classList.remove('on'),actLabel?5000:1400)}
 function haptic(ms){if(navigator.vibrate)navigator.vibrate(ms||8)}
 function countTo(el,to){const from=parseFloat(el.textContent)||0;if(from===to){el.textContent=to;return}
   const t0=performance.now(),dur=420;
@@ -821,8 +830,8 @@ window.addP=(iso,g)=>{D(iso).protein=Math.max(0,(D(iso).protein||0)+g);haptic(10
 window.addWater=(delta)=>{const iso=tkey(),d=D(iso);d.water=Math.max(0,(d.water||0)+delta);haptic(8);save();renderToday()};
 
 /* ============ FOOD DIARY ENGINE ============ */
-function mealTotals(iso){const d=S.days[iso];if(!d||!d.meals)return{kcal:0,p:0,n:0};
-  let kcal=0,p=0,n=0;for(const m in d.meals)for(const f of d.meals[m]){kcal+=f.kcal||0;p+=f.p||0;n++}return{kcal,p,n}}
+function mealTotals(iso){const d=S.days[iso];if(!d||!d.meals)return{kcal:0,p:0,c:0,f:0,n:0};
+  let kcal=0,p=0,c=0,f=0,n=0;for(const m in d.meals)for(const it of d.meals[m]){kcal+=it.kcal||0;p+=it.p||0;c+=it.c||0;f+=it.f||0;n++}return{kcal,p,c,f,n}}
 function scanTotals(iso){const d=S.days[iso];if(!d||!d.meals)return{items:0,kcal:0};
   let items=0,kcal=0;for(const m in d.meals)for(const f of d.meals[m]){if(f.scan){items++;kcal+=f.kcal||0}}return{items,kcal}}
 function monthTotals(){const now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),1);let kcal=0,p=0,scans=0;
@@ -835,11 +844,23 @@ function syncDiary(iso){const d=D(iso),t=mealTotals(iso);
   d.kcal=t.kcal;d.protein=Math.round(t.p);save()}
 window.renderDiary=(iso)=>{const d=D(iso),t=mealTotals(iso);
   document.getElementById('diaryTotal').textContent=t.kcal?`${t.kcal} kcal · ${Math.round(t.p)}g P`:'0 kcal · 0g P';
+  // macro split bar (P/C/F as % of kcal)
+  const pk=t.p*4, ck=t.c*4, fk=t.f*9, tk=pk+ck+fk||1;
+  const split=document.getElementById('macroSplit');
+  if(split){split.style.display=t.kcal?'':'none';
+    split.innerHTML=`<div style="display:flex;height:6px;border-radius:99px;overflow:hidden;background:var(--bg-2);margin-bottom:4px">
+      <div style="width:${pk/tk*100}%;background:var(--orange)"></div>
+      <div style="width:${ck/tk*100}%;background:var(--blue)"></div>
+      <div style="width:${fk/tk*100}%;background:var(--amber,#d9a520)"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--txt2);font-weight:600;font-variant-numeric:tabular-nums">
+      <span style="color:var(--orange)">P ${Math.round(t.p)}g</span><span style="color:var(--blue)">C ${Math.round(t.c)}g</span><span>F ${Math.round(t.f)}g</span></div>`}
   const ICONS={breakfast:'🌅',lunch:'☀️',dinner:'🌙',snacks:'🍎'};
   document.getElementById('diaryBody').innerHTML=MEALS.map(([mid,mlabel])=>{
     const items=d.meals[mid]||[];
-    const mealKcal=items.reduce((a,f)=>a+f.kcal,0);
-    const mealP=items.reduce((a,f)=>a+f.p,0);
+    const mealKcal=items.reduce((a,f)=>a+(f.kcal||0),0);
+    const mealP=items.reduce((a,f)=>a+(f.p||0),0);
+    const mealC=items.reduce((a,f)=>a+(f.c||0),0);
+    const mealF=items.reduce((a,f)=>a+(f.f||0),0);
     return `<div class="meal-group">
       <div class="meal-header">
         <div class="meal-title">
@@ -847,35 +868,44 @@ window.renderDiary=(iso)=>{const d=D(iso),t=mealTotals(iso);
           <span>${mlabel}</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <span class="meal-kcal">${items.length?`${mealKcal} kcal · ${Math.round(mealP)}g P`:''}</span>
+          <span class="meal-kcal">${items.length?`${mealKcal} kcal · ${Math.round(mealP)}P ${Math.round(mealC)}C ${Math.round(mealF)}F`:''}</span>
           <button class="meal-add-btn" onclick="openPicker('${iso}','${mid}')">+ Add</button>
         </div>
       </div>
       ${items.length?items.map((f,i)=>`
         <div class="food-row">
-          <span class="food-name">${f.n}</span>
+          <span class="food-name">${f.n}${f.scan?' <span class="chip" style="font-size:.6rem;padding:1px 5px">📷</span>':''}</span>
           <div class="food-badges">
             <span class="badge-pill kcal">${f.kcal} kcal</span>
             <span class="badge-pill prot">${f.p}g P</span>
+            ${(f.c||f.f)?`<span class="badge-pill" style="background:rgba(56,189,248,.12);color:var(--blue)">${Math.round(f.c||0)}C · ${Math.round(f.f||0)}F</span>`:''}
             <button class="del-btn" onclick="delFood('${iso}','${mid}',${i})" title="remove">×</button>
           </div>
         </div>
       `).join('')
       :`<div style="font-size:.74rem;color:var(--dim);padding:8px 4px;border:1px dashed var(--line-subtle);border-radius:10px;text-align:center;cursor:pointer" onclick="openPicker('${iso}','${mid}')">+ Log ${mlabel.toLowerCase()}</div>`}
     </div>`}).join('')};
-window.delFood=(iso,m,i)=>{D(iso).meals[m].splice(i,1);syncDiary(iso);renderToday();haptic();toast('removed')};
+window.delFood=(iso,m,i)=>{const removed=D(iso).meals[m].splice(i,1)[0];syncDiary(iso);renderToday();haptic();
+  toast('removed','Undo',()=>{D(iso).meals[m].splice(i,0,removed);syncDiary(iso);renderToday();toast('restored')})};
 let PICK={iso:null,meal:null,q:''};
-function foodMatches(){const q=PICK.q.toLowerCase();
+function fuzzy(name,q){/* subsequence + token scoring: 'pnut bt' finds 'Peanut butter' */
+  if(!q)return 1;const n=name.toLowerCase();if(n.includes(q))return 100;
+  const toks=q.split(/\s+/).filter(Boolean);let score=0,pos=0;
+  for(const t of toks){const idx=n.indexOf(t,pos);if(idx>=0){score+=10-(idx/10);pos=idx+t.length}else{
+    // subsequence fallback for typos/abbrev: 'pbt' -> 'peanut butter'
+    let p=0,hits=0;for(const ch of t){p=n.indexOf(ch,p);if(p>=0){hits++;p++}}
+    if(hits===t.length)score+=4;else return 0}}
+  return score}
+function foodMatches(){const q=PICK.q.toLowerCase().trim();
   const scored=[];
-  for(const f of FOODS){const name=f[0].toLowerCase();const hit=!q||name.includes(q);
-    if(hit)scored.push({name:f[0],kcal:f[1],p:f[2],fav:S.favs.includes(f[0]),kind:'lib'})}
-  for(const c of (S.customs||[])){if(!q||c.name.toLowerCase().includes(q))scored.push({name:c.name,kcal:c.kcal,p:c.p,fav:S.favs.includes(c.name),kind:'custom'})}
-  scored.sort((a,b)=>(b.fav-a.fav)||b.p-a.p);return scored}
+  for(const f of FOODS){const s=fuzzy(f[0],q);if(s>0)scored.push({name:f[0],kcal:f[1],p:f[2],c:f[3]||0,f:f[4]||0,fav:S.favs.includes(f[0]),kind:'lib',s})}
+  for(const c of (S.customs||[])){const s=fuzzy(c.name,q);if(s>0)scored.push({name:c.name,kcal:c.kcal,p:c.p,c:c.c||0,f:c.f||0,fav:S.favs.includes(c.name),kind:'custom',s})}
+  for(const o of (S.offCache||[])){const s=fuzzy(o.name,q);if(s>0)scored.push({name:o.name,kcal:Math.round(o.per100.kcal),p:+o.per100.p.toFixed(0),c:+o.per100.c.toFixed(0),f:+o.per100.f.toFixed(0),fav:false,kind:'off',code:o.code,s:s*0.9})}
+  scored.sort((a,b)=>(b.fav-a.fav)||(b.s-a.s)||b.p-a.p);return scored}
 window.openPicker=(iso,meal)=>{PICK={iso,meal,q:''};
   document.getElementById('pickTitle').textContent='Add to '+MEALS.find(m=>m[0]===meal)[1];
   renderPickList();document.getElementById('pickOverlay').classList.add('on')};
 window.closePicker=()=>document.getElementById('pickOverlay').classList.remove('on');
-window.pickFilter=v=>{PICK.q=v;renderPickList()};
 function renderPickList(){
   const recentNames=(S.recents||[]).slice(0,6);
   const recentHTML=recentNames.length&&!PICK.q?`<p class="small" style="margin:10px 0 4px;color:var(--txt2);font-weight:700">RECENT</p><div class="chips">${recentNames.map(n=>{
@@ -883,32 +913,82 @@ function renderPickList(){
     return f?`<button class="tog" onclick="addFood('${PICK.iso}','${PICK.meal}','${n.replace(/'/g,"\\'")}')">${n}</button>`:''}).join('')}</div>`:'';
   const list=foodMatches();
   document.getElementById('pickList').innerHTML=recentHTML+'<div style="margin-top:8px">'+list.map(f=>
-    `<div class="foodrow pickrow" onclick="addFood('${PICK.iso}','${PICK.meal}','${f.name.replace(/'/g,"\\'")}')">
-      <span style="font-weight:500">${f.name}</span>
+    `<div class="foodrow pickrow" onclick="addFood('${PICK.iso}','${PICK.meal}','${f.name.replace(/'/g,"\\'")}',${f.kcal},${f.p},${f.c},${f.f})">
+      <span style="font-weight:500">${f.name}${f.kind==='off'?' <span class="chip" style="font-size:.58rem;padding:1px 5px">OFF</span>':''}</span>
       <span class="chip" style="font-size:.7rem;padding:2px 7px">${f.kcal} kcal</span>
       <span class="chip amber" style="font-size:.7rem;padding:2px 7px">${f.p}g P</span>
       <button class="star ${f.fav?'on':''}" onclick="event.stopPropagation();togFav('${f.name.replace(/'/g,"\\'")}')">${f.fav?'★':'☆'}</button>
-    </div>`).join('')+'</div>'}
-window.addFood=(iso,meal,name,kcal,p,extra)=>{extra=extra||{};const lib=FOODS.find(x=>x[0]===name);const c=(S.customs||[]).find(x=>x.name===name);
-  const fk=lib?lib[1]:(c?c.kcal:0),fp=lib?lib[2]:(c?c.p:0);const item={n:name,kcal:(kcal||fk)||0,p:(p||fp)||0,ts:extra.ts||Date.now(),scan:!!extra.scan,confidence:extra.confidence||null,basis:extra.basis||null,warnings:extra.warnings?extra.warnings.slice(0,5):null};
-  if(extra.items&&extra.items.length){extra.items.forEach(it=>{D(iso).meals[meal].push({...it,ts:item.ts,scan:true})})}
+    </div>`).join('')+(PICK.q.length>=3&&!list.length?'<div class="small" style="color:var(--txt2);text-align:center;padding:14px">no local match — searching Open Food Facts…</div>':'')+'</div>'}
+/* deep search: after 600ms of typing, pull OFF results into a local cache */
+let OFF_T=null;
+window.pickFilter=v=>{PICK.q=v;renderPickList();clearTimeout(OFF_T);
+  if(v.trim().length>=3)OFF_T=setTimeout(()=>offDeepSearch(v.trim()),600)};
+async function offDeepSearch(q){try{const r=await fetch('/api/foodsearch?q='+encodeURIComponent(q));if(!r.ok)return;const d=await r.json();
+  if(!d.results||!d.results.length)return;S.offCache=S.offCache||[];
+  for(const o of d.results){if(!S.offCache.find(x=>x.code===o.code))S.offCache.push(o)}
+  S.offCache=S.offCache.slice(-80);save();if(PICK.q===q||PICK.q.toLowerCase()===q.toLowerCase())renderPickList()}catch(e){}}
+window.addFood=(iso,meal,name,kcal,p,c,f,extra)=>{extra=extra||{};const lib=FOODS.find(x=>x[0]===name);const c2=(S.customs||[]).find(x=>x.name===name);
+  let fk=lib?lib[1]:(c2?c2.kcal:0),fp=lib?lib[2]:(c2?c2.p:0),fc=lib?(lib[3]||0):(c2?c2.c||0:0),ff=lib?(lib[4]||0):(c2?c2.f||0:0);
+  if(!fk&&!c2){const o=(S.offCache||[]).find(x=>x.name===name);if(o){fk=Math.round(o.per100.kcal);fp=+o.per100.p.toFixed(0);fc=+o.per100.c.toFixed(0);ff=+o.per100.f.toFixed(0)}}
+  const item={n:name,kcal:(kcal||fk)||0,p:(p??fp)||0,c:(c??fc)||0,f:(f??ff)||0,ts:extra.ts||Date.now(),scan:!!extra.scan,confidence:extra.confidence||null,basis:extra.basis||null,warnings:extra.warnings?extra.warnings.slice(0,5):null};
+  if(extra.items&&extra.items.length){extra.items.forEach(it=>{D(iso).meals[meal].push({n:it.n||it.name,kcal:it.kcal||0,p:it.p||0,c:it.c||0,f:it.f||0,ts:item.ts,scan:true,confidence:it.confidence||null,basis:it.basis||null})})}
   else{D(iso).meals[meal].push(item)}
   S.recents=S.recents||[];S.recents=[name,...(S.recents||[]).filter(x=>x!==name)].slice(0,12);
-  if(extra.source==='scan')S.scans=S.scans||[];
   syncDiary(iso);renderToday();haptic(12);toast('+ logged')};
 window.togFav=(name)=>{S.favs=S.favs||[];const i=S.favs.indexOf(name);
   if(i>=0)S.favs.splice(i,1);else S.favs.push(name);save();renderPickList()};
 window.addCustomFood=()=>{const name=document.getElementById('cfName').value.trim();
   const kcal=+document.getElementById('cfKcal').value,p=+document.getElementById('cfP').value;
+  const c=+document.getElementById('cfC').value||0,f=+document.getElementById('cfF').value||0;
   if(!name||!kcal){toast('name + kcal needed');return}
-  S.customs=S.customs||[];if(!S.customs.find(c=>c.name===name))S.customs.push({name,kcal,p:p||0});
-  save();document.getElementById('cfName').value='';document.getElementById('cfKcal').value='';document.getElementById('cfP').value='';
+  S.customs=S.customs||[];if(!S.customs.find(x=>x.name===name))S.customs.push({name,kcal,p:p||0,c,f});
+  save();['cfName','cfKcal','cfP','cfC','cfF'].forEach(id=>document.getElementById(id).value='');
   renderPickList();toast(name+' saved')};
 
 /* ============ FOOD SCANNER (vision) ============ */
-let SCAN_RESULT=null, SCAN_STREAM=null;
+let SCAN_RESULT=null, SCAN_STREAM=null, BC_STREAM=null, BC_LOOP=null, BC_PRODUCT=null;
 window.openScanner=()=>{document.getElementById('scanOverlay').classList.add('on');resetScanner()};
-window.closeScanner=()=>{document.getElementById('scanOverlay').classList.remove('on');stopCamera()};
+window.closeScanner=()=>{document.getElementById('scanOverlay').classList.remove('on');stopCamera();stopBarcode()};
+
+/* --- Barcode mode: exact OFF numbers, deterministic kcal = per100 × g/100 --- */
+window.startBarcode=async()=>{
+  if(!('BarcodeDetector' in window)){toast('no BarcodeDetector — type the digits');return bcManual()}
+  try{BC_STREAM=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})}
+  catch(x){toast('camera blocked');return bcManual()}
+  const v=document.getElementById('scanVideo');v.srcObject=BC_STREAM;v.style.display='';
+  document.getElementById('bcHint').style.display='';document.getElementById('bcResult').style.display='none';
+  const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128']});
+  let last='',busy=false;
+  BC_LOOP=setInterval(async()=>{if(busy)return;busy=true;
+    try{const codes=await det.detect(v);if(codes.length&&codes[0].rawValue!==last){last=codes[0].rawValue;stopBarcodeLoop();haptic(60);bcLookup(last)}else if(codes.length){last=codes[0].rawValue}}catch(e){}
+    busy=false},350)};
+function stopBarcodeLoop(){if(BC_LOOP){clearInterval(BC_LOOP);BC_LOOP=null}}
+function stopBarcode(){stopBarcodeLoop();if(BC_STREAM){BC_STREAM.getTracks().forEach(t=>t.stop());BC_STREAM=null}const v=document.getElementById('scanVideo');v.style.display='none';document.getElementById('bcHint').style.display='none'}
+function bcManual(){const code=prompt('Enter the barcode digits:');if(!code)return;bcLookup(code.replace(/\D/g,''))}
+async function bcLookup(code){const el=document.getElementById('bcResult');el.style.display='';el.innerHTML='<div class="small" style="color:var(--txt2);padding:10px;text-align:center">Looking up '+code+'…</div>';
+  try{const r=await fetch('/api/barcode?code='+encodeURIComponent(code));const d=await r.json();
+    if(!r.ok){el.innerHTML=`<div class="small" style="color:var(--orange);padding:10px;text-align:center">${d.error||'not found'} — try photo scan</div>`;return}
+    BC_PRODUCT=d;const g=d.serving_g?Math.round(parseFloat(d.serving_g))||null:null;
+    el.innerHTML=`<div style="background:var(--bg-2);border:1px solid var(--line-subtle);border-radius:12px;padding:12px">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:2px">${d.name}</div>
+      <div class="small" style="color:var(--txt2);margin-bottom:8px">${d.brands||''} · per 100g: ${Math.round(d.per100.kcal)} kcal · ${d.per100.p}g P · ${d.per100.c}g C · ${d.per100.f}g F</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="number" id="bcGrams" class="wide" inputmode="numeric" placeholder="grams eaten" value="${g||''}" style="flex:1" oninput="bcCalc()">
+        <span class="chip fire" id="bcKcal" style="font-variant-numeric:tabular-nums;min-width:90px;text-align:center">— kcal</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <select id="bcMeal" class="wide" style="flex:1"><option value="breakfast">🌅 Breakfast</option><option value="lunch">☀️ Lunch</option><option value="dinner" selected>🌙 Dinner</option><option value="snacks">🍎 Snacks</option></select>
+        <button class="btn sm primary" onclick="bcLog()" style="flex:1">✓ Log</button>
+      </div></div>`;
+    if(g)bcCalc()}catch(x){el.innerHTML='<div class="small" style="color:var(--red);padding:10px;text-align:center">lookup failed — offline?</div>'}}
+window.bcCalc=()=>{if(!BC_PRODUCT)return;const g=parseFloat(document.getElementById('bcGrams').value)||0;const p=BC_PRODUCT.per100;
+  document.getElementById('bcKcal').textContent=g?`${Math.round(p.kcal*g/100)} kcal · ${(p.p*g/100).toFixed(0)}P`:'— kcal'};
+window.bcLog=()=>{if(!BC_PRODUCT)return;const g=parseFloat(document.getElementById('bcGrams').value)||0;if(!g){toast('enter grams');return}
+  const p=BC_PRODUCT.per100;const item={n:BC_PRODUCT.name,kcal:Math.round(p.kcal*g/100),p:+(p.p*g/100).toFixed(1),c:+(p.c*g/100).toFixed(1),f:+(p.f*g/100).toFixed(1)};
+  D(tkey()).meals[document.getElementById('bcMeal').value].push({...item,ts:Date.now(),scan:false,basis:'barcode',confidence:0.95});
+  S.recents=[BC_PRODUCT.name,...(S.recents||[]).filter(x=>x!==BC_PRODUCT.name)].slice(0,12);
+  syncDiary(tkey());closeScanner();renderToday();haptic(20);toast('✓ '+item.kcal+' kcal logged')};
+
 window.captureCamera=async()=>{try{SCAN_STREAM=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});const v=document.getElementById('scanVideo');v.srcObject=SCAN_STREAM;v.style.display='';document.getElementById('scanPreview').style.display='none'}catch(x){toast('camera blocked — use gallery instead')}};
 window.pickFile=()=>document.getElementById('scanFile').click();
 window.onFileScan=async(input)=>{const f=input.files[0];if(!f)return;const r=await blobToDataURL(f);document.getElementById('scanPreview').src=r;document.getElementById('scanPreview').style.display='';stopCamera();runScan(r)};
@@ -918,8 +998,12 @@ window.retakeScan=()=>resetScanner();
 function resetScanner(){SCAN_RESULT=null;document.getElementById('scanStep1').style.display='';document.getElementById('scanStep2').style.display='none';document.getElementById('scanFile').value='';document.getElementById('scanPreview').style.display='none';document.getElementById('scanHint').value=''}
 async function runScan(dataUrl){document.getElementById('scanStep1').style.display='none';document.getElementById('scanStep2').style.display='';document.getElementById('scanStatus').textContent='Analyzing…';document.getElementById('scanResult').style.display='none';document.getElementById('scanError').style.display='none';const preview=document.getElementById('scanPreview');if(preview.src&&preview.style.display!=='none'){document.getElementById('scanPreview2').src=preview.src}else{document.getElementById('scanPreview2').innerHTML='<div style="padding:40px;text-align:center;color:var(--dim)">image captured</div>'}
   try{const r=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json','X-Coach-Token':'bodyos-local'},body:JSON.stringify({image:dataUrl,hint:document.getElementById('scanHint').value})});const d=await r.json();if(!r.ok)throw new Error(d.error||'scan failed');SCAN_RESULT=d;renderScanResult(d)}catch(x){document.getElementById('scanError').textContent=x.message||'scan failed';document.getElementById('scanError').style.display='';document.getElementById('scanStatus').textContent='failed'}}
-function renderScanResult(d){document.getElementById('scanStatus').textContent=(d.ms?`Done in ${d.ms}ms · `:'')+(d.model?`via ${d.model}`:'');document.getElementById('scanKind').textContent=(d.kind||'?').toUpperCase();document.getElementById('scanTotal').textContent=`${Math.round(d.total_kcal)} kcal · ${(d.total_protein||0).toFixed(1)}g P`;document.getElementById('scanItems').innerHTML=(d.items||[]).map((it,i)=>`<div class="food-row" style="font-size:.82rem"><span class="food-name">${it.name||'item '+(i+1)}</span><div class="food-badges"><span class="badge-pill kcal">${it.qty_g||'?'}g · ${Math.round(it.kcal)} kcal</span><span class="badge-pill prot">${(it.protein_g||0).toFixed(1)}g P</span><span class="chip" style="font-size:.65rem;padding:2px 6px">${Math.round((it.confidence||0)*100)}% ${it.basis||''}</span></div></div>`).join('');const warns=(d.warnings||[]).filter(Boolean);document.getElementById('scanWarnings').innerHTML=warns.length?warns.map(w=>`<div class="small" style="color:var(--orange);margin-top:2px">⚠ ${w}</div>`).join(''):'';document.getElementById('scanResult').style.display=''}
-window.approveScan=()=>{if(!SCAN_RESULT)return;const iso=tkey(),meal=document.getElementById('scanMeal').value;SCAN_RESULT.items=SCAN_RESULT.items||[];if(!SCAN_RESULT.items.length&&SCAN_RESULT.total_kcal){SCAN_RESULT.items.push({name:'Scanned meal',qty_g:0,kcal:SCAN_RESULT.total_kcal,protein_g:SCAN_RESULT.total_protein||0,confidence:SCAN_RESULT.items?.[0]?.confidence||0.7,basis:'visual-estimate',warnings:SCAN_RESULT.warnings})}addFood(iso,meal,'scan',SCAN_RESULT.total_kcal,SCAN_RESULT.total_protein,{ts:Date.now(),scan:true,confidence:SCAN_RESULT.items?.[0]?.confidence||null,basis:SCAN_RESULT.items?.[0]?.basis||null,warnings:SCAN_RESULT.warnings,items:SCAN_RESULT.items,source:'scan'});closeScanner();renderToday()};
+function renderScanResult(d){document.getElementById('scanStatus').textContent=(d.ms?`Done in ${d.ms}ms · `:'')+(d.model?`via ${d.model}`:'');document.getElementById('scanKind').textContent=(d.kind||'?').toUpperCase();document.getElementById('scanTotal').textContent=`${Math.round(d.total_kcal)} kcal · ${(d.total_protein||0).toFixed(1)}P ${(d.total_carbs||0).toFixed(0)}C ${(d.total_fat||0).toFixed(0)}F`;document.getElementById('scanItems').innerHTML=(d.items||[]).map((it,i)=>`<div class="food-row" style="font-size:.82rem"><span class="food-name">${it.name||'item '+(i+1)}</span><div class="food-badges"><span class="badge-pill kcal">${it.qty_g||'?'}g · ${Math.round(it.kcal)} kcal</span><span class="badge-pill prot">${(it.protein_g||0).toFixed(1)}g P</span><span class="chip" style="font-size:.65rem;padding:2px 6px">${Math.round((it.confidence||0)*100)}% ${it.basis||''}</span></div></div>`).join('');const warns=(d.warnings||[]).filter(Boolean);document.getElementById('scanWarnings').innerHTML=warns.length?warns.map(w=>`<div class="small" style="color:var(--orange);margin-top:2px">⚠ ${w}</div>`).join(''):'';document.getElementById('scanResult').style.display=''}
+window.approveScan=()=>{if(!SCAN_RESULT)return;const iso=tkey(),meal=document.getElementById('scanMeal').value;SCAN_RESULT.items=SCAN_RESULT.items||[];
+  const items=SCAN_RESULT.items.map(it=>({n:it.name||'Scanned item',kcal:Math.round(it.kcal||0),p:+(it.protein_g||0).toFixed(1),c:+(it.carbs_g||0).toFixed(1),f:+(it.fat_g||0).toFixed(1),confidence:it.confidence||null,basis:it.basis||null}));
+  if(!items.length&&SCAN_RESULT.total_kcal){items.push({n:'Scanned meal',kcal:Math.round(SCAN_RESULT.total_kcal),p:+(SCAN_RESULT.total_protein||0).toFixed(1),c:+(SCAN_RESULT.total_carbs||0).toFixed(1),f:+(SCAN_RESULT.total_fat||0).toFixed(1),confidence:0.7,basis:'visual-estimate'})}
+  addFood(iso,meal,'📷 '+(SCAN_RESULT.kind==='packet'?'Packet':SCAN_RESULT.kind==='plate'?'Plate':'Scan'),SCAN_RESULT.total_kcal,SCAN_RESULT.total_protein,undefined,undefined,{ts:Date.now(),scan:true,confidence:items[0]?.confidence||null,basis:items[0]?.basis||null,warnings:SCAN_RESULT.warnings,items});
+  closeScanner();renderToday()};
 
 window.togSupp=(iso,k)=>{const d=D(iso);d.supps[k]=!d.supps[k];save();renderToday()};
 window.togPrep=(iso,i)=>{const d=D(iso);d.prep[i]=!d.prep[i];save();renderToday()};
