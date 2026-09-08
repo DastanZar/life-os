@@ -9,38 +9,41 @@
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* WARM CREAM canvas (your original spec, Aug 31) */
-  --bg:#f6f1e7;         /* warm cream, the page itself */
-  --bg2:#fbf7ee;         /* lighter cream for sheets */
-  --card:#ffffff;         /* card surface, pure paper */
-  --card2:#faf6ed;        /* nested surface */
-  --card3:#f1ebdd;        /* chip/disabled */
-  --line:rgba(20,16,10,0.08);
-  --line-subtle:rgba(20,16,10,0.05);
-  --line-accent:rgba(255,107,0,0.35);
+  /* STITCH DESIGN SYSTEM — extracted from user's 4 reference screens (Sep 8)
+     Warm greige canvas, lime accent, pastel category cards, near-black ink */
+  --bg:#ECEBE6;          /* warm greige canvas (screen 1 bg) */
+  --bg2:#F5F4F0;         /* lighter surface */
+  --card:#F5F4F0;        /* card surface */
+  --card2:#E7E6E1;       /* nested surface / chip */
+  --card3:#DCDBD5;       /* disabled / track */
+  --line:rgba(20,20,20,0.04);
+  --line-subtle:rgba(20,20,20,0.03);
+  --line-accent:rgba(196,240,60,0.5);
 
-  --txt:#1a1410;          /* near-black warm */
-  --txt2:#5b5246;         /* secondary warm */
-  --dim:#8a7e6e;          /* tertiary */
+  --txt:#141414;          /* near-black ink */
+  --txt2:#6E6E68;         /* secondary */
+  --dim:#8C8C86;          /* tertiary / captions */
 
-  --orange:#ff6b00;
-  --orange2:#ff8533;
-  --orange-soft:#fff1e3;  /* soft orange wash */
-  --orange-glow:rgba(255,107,0,0.18);
+  /* PRIMARY: lime chartreuse — the accent of the reference */
+  --accent:#8FBA1E;       /* accessible lime (darkened for text/icons on cream) */
+  --accent-bright:#C4F03C; /* the reference lime — for fills, arcs, dots */
+  --accent-soft:#E9F5C8;  /* lime wash */
 
-  --blue:#2563eb;
-  --blue-soft:#e6efff;
-  --blue-glow:rgba(37,99,235,0.14);
+  /* category pastels (screen 2 card grid) */
+  --mint:#CFE8D8; --mint-deep:#2E6E4E;
+  --peach:#F4CFC2; --peach-deep:#B0552F;
+  --pale:#EFE3A8; --pale-deep:#8A7A3A;
+  --pink:#F06E96;
 
-  --green:#15803d;
-  --green-soft:#e3f3e8;
-  --green-glow:rgba(21,128,61,0.14);
+  /* legacy aliases kept so old rules don't break */
+  --orange:var(--accent); --orange2:#9BBA2E; --orange-soft:var(--accent-soft); --orange-glow:rgba(127,163,28,0.18);
+  --blue:#2563eb; --blue-soft:#e6efff; --blue-glow:rgba(37,99,235,0.14);
+  --green:#34C759; --green-soft:#E3F3E8; --green-glow:rgba(52,199,89,0.14);
+  --red:#dc2626; --red-soft:#fde7e7;
 
-  --red:#dc2626;
-  --red-soft:#fde7e7;
+  --card-radius:28px; --btn-radius:999px; --pill-radius:999px;
+  --glass:rgba(245,244,240,.55); --glass-strong:rgba(245,244,240,.72); --glass-brd:rgba(255,255,255,.65); --glass-blur:blur(18px) saturate(1.6);
 
-  --card-radius:22px; --btn-radius:16px; --pill-radius:999px;
-  --glass:rgba(255,255,255,.55); --glass-strong:rgba(255,255,255,.72); --glass-brd:rgba(255,255,255,.65); --glass-blur:blur(18px) saturate(1.6);
   font-size:15px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -48,7 +51,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Satoshi',-apple-sys
 body{max-width:440px;margin:0 auto;min-height:100vh;padding:0 0 96px;position:relative}
 
 /* Header — flat cream, no glass */
-header{position:sticky;top:0;z-index:30;background:var(--bg);padding:14px 18px 10px;border-bottom:1px solid var(--line-subtle)}
+header{position:sticky;top:0;z-index:30;background:var(--bg);padding:calc(env(safe-area-inset-top, 0px) + 14px) 18px 10px;border-bottom:1px solid var(--line-subtle)}
 .hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .hdate{font-family:'Clash Display',system-ui,sans-serif;font-size:1.42rem;font-weight:700;letter-spacing:-0.4px;line-height:1.15;color:var(--txt)}
 .hsub{color:var(--txt2);font-size:.76rem;margin-top:4px;font-weight:500;letter-spacing:0.1px}
@@ -89,8 +92,9 @@ main > *:nth-child(8){animation-delay:420ms}
 .hero-badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--orange-soft);color:var(--orange);border:1px solid rgba(255,107,0,0.25)}
 .hero h2{font-family:'Clash Display',system-ui,sans-serif;font-size:1.42rem;font-weight:700;line-height:1.18;letter-spacing:-.5px;color:var(--txt);margin-bottom:6px}
 .hero p{font-size:.84rem;color:var(--txt2);font-weight:500;margin-bottom:12px;line-height:1.4}
-.hero-cta{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;color:var(--orange);background:transparent;border:0;padding:0;cursor:pointer}
-.hero-cta:active{opacity:.6}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;font-size:.82rem;font-weight:700;color:#fff;background:var(--txt);border-radius:999px;padding:11px 18px 11px 12px;cursor:pointer;box-shadow:0 6px 18px rgba(20,20,20,.22);transition:transform .15s cubic-bezier(.22,1,.36,1)}
+.hero-cta:active{transform:scale(.97)}
+.hero-arrow{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent-bright);color:var(--txt);font-size:.72rem}
 
 /* Macro ring */
 .macro-card{padding:16px 18px}
@@ -99,8 +103,8 @@ main > *:nth-child(8){animation-delay:420ms}
 .ring{position:relative;width:104px;height:104px;display:flex;align-items:center;justify-content:center}
 .ring svg{transform:rotate(-90deg)}
 .ring .val{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
-.ring .val .big{font-family:'Clash Display',system-ui,sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:-0.5px;color:var(--txt);line-height:1}
-.ring .val .small{font-size:.6rem;font-weight:700;letter-spacing:0.8px;color:var(--dim);text-transform:uppercase;margin-top:3px}
+.ring .val .big{font-family:'Clash Display',system-ui,sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:-0.5px;color:#fff;line-height:1}
+.ring .val .small{font-size:.6rem;font-weight:700;letter-spacing:0.8px;color:var(--accent-bright);text-transform:uppercase;margin-top:3px}
 
 .macro-bars{display:flex;flex-direction:column;gap:10px}
 .bar-wrap{display:flex;flex-direction:column;gap:4px}
@@ -109,7 +113,8 @@ main > *:nth-child(8){animation-delay:420ms}
 .bar-meta .val{color:var(--txt);font-variant-numeric:tabular-nums;font-size:.74rem}
 .bar-track{height:6px;border-radius:999px;background:var(--card3);overflow:hidden}
 .bar-fill{height:100%;border-radius:999px;transition:width .45s cubic-bezier(.22,1,.36,1)}
-.bar-fill.orange{background:var(--orange)}
+.bar-fill.orange{background:var(--accent)}
+.bar-fill.lime{background:var(--accent-bright)}
 .bar-fill.blue{background:var(--blue)}
 .bar-fill.emerald{background:var(--green)}
 
@@ -165,7 +170,7 @@ main > *:nth-child(8){animation-delay:420ms}
 .blaze{width:56px;height:56px;position:relative;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .blaze-rig{width:100%;height:100%}
 .blaze-rig svg{width:100%;height:100%;overflow:visible}
-.blaze-body{fill:var(--orange);transform-origin:32px 50px}
+.blaze-body{fill:#ff6b00;transform-origin:32px 50px} /* Blaze pinned: real flame color, not themed */
 .blaze-inner{fill:#ffd166;transform-origin:32px 40px;animation:blazeInnerFlicker 2.1s ease-in-out infinite}
 .blaze-eyes .eye{animation:blazeBlink 4.5s infinite}
 .blaze-arm{transform-origin:24px 36px}
@@ -181,12 +186,12 @@ main > *:nth-child(8){animation-delay:420ms}
 .plan-week-title{font-family:'Clash Display',system-ui,sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.3px;color:var(--txt)}
 .plan-prog-label{font-size:.74rem;color:var(--txt2);font-weight:600;margin-top:2px}
 .prog{height:8px;border-radius:99px;background:var(--card3);overflow:hidden;margin:12px 0 0}
-.prog i{display:block;height:100%;border-radius:99px;background:var(--orange);transition:width 1s cubic-bezier(.22,1,.36,1)}
+.prog i{display:block;height:100%;border-radius:99px;background:var(--accent-bright);transition:width 1s cubic-bezier(.22,1,.36,1)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:14px}
 .d{aspect-ratio:1;border-radius:9px;background:var(--card2);border:1px solid var(--line-subtle);font-size:.62rem;font-weight:600;color:var(--dim);display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .d.done{background:var(--orange-soft);border-color:rgba(255,107,0,.25);color:var(--orange)}
 .d.deload{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.25);color:var(--blue)}
-.d.today{background:var(--orange);border-color:var(--orange);color:#fff;transform:scale(1.18);box-shadow:0 3px 12px rgba(255,107,0,.4);font-weight:800}
+.d.today{background:var(--txt);border-color:var(--txt);color:var(--accent-bright);transform:scale(1.18);box-shadow:0 3px 12px rgba(20,20,20,.3);font-weight:800}
 .d.future{opacity:.5}
 .d:active{transform:scale(.9)}
 .cal-month-sep{font-size:.6rem;font-weight:700;letter-spacing:1px;color:var(--dim);grid-column:1/-1;margin-top:2px;text-transform:uppercase}
@@ -237,7 +242,7 @@ main > *:nth-child(8){animation-delay:420ms}
 .chat-avatar{width:24px;height:24px;border-radius:50%;background:var(--orange-soft);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:.62rem;letter-spacing:-.2px;border:1px solid rgba(255,107,0,0.2)}
 .chat-bubble{max-width:78%;padding:9px 13px;border-radius:18px;font-size:.86rem;line-height:1.4;font-weight:500;word-wrap:break-word;white-space:pre-wrap}
 .chat-row.coach .chat-bubble{background:var(--card);border:1px solid var(--line);color:var(--txt);border-bottom-left-radius:6px;box-shadow:0 1px 0 rgba(20,16,10,.04)}
-.chat-row.user .chat-bubble{background:var(--orange);color:#fff;border-bottom-right-radius:6px}
+.chat-row.user .chat-bubble{background:var(--txt);color:#fff;border-bottom-right-radius:6px}
 .chat-bubble .meta{font-size:.62rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-top:5px;opacity:.6;display:block}
 .chat-bubble.thinking .dots{display:inline-flex;gap:3px;align-items:center;height:14px}
 .chat-bubble.thinking .dots span{width:5px;height:5px;border-radius:50%;background:var(--dim);animation:dotBounce 1.2s infinite}
@@ -265,9 +270,9 @@ main > *:nth-child(8){animation-delay:420ms}
 .chat-mic{background:transparent;color:var(--dim);padding:7px}
 .chat-mic svg{width:18px;height:18px}
 .chat-mic:active{background:var(--card2);color:var(--txt)}
-.chat-send{background:var(--orange);color:#fff;padding:8px}
+.chat-send{background:var(--txt);color:var(--accent-bright);padding:8px}
 .chat-send svg{width:16px;height:16px}
-.chat-send:active{background:#e85f00;transform:scale(0.9)}
+.chat-send:active{background:#000;transform:scale(0.9)}
 .chat-send:disabled{background:var(--card3);color:var(--dim);cursor:default}
 .chat-send:disabled:active{transform:none;background:var(--card3)}
 
@@ -309,32 +314,32 @@ main > *:nth-child(8){animation-delay:420ms}
 .check-btn:active{transform:scale(0.88)}
 
 /* ============ BOTTOM NAV (iOS-style, real icons, real indicator) ============ */
-/* ============ BOTTOM NAV — reference-image spec ============
-   Opaque white floating pill, icon-only (no labels), 1.5px strokes,
-   active = color change + 6px dot BELOW the bar, raised center FAB. */
-nav{position:fixed;bottom:24px;left:24px;right:24px;max-width:380px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-radius:32px;padding:12px 8px;box-shadow:0 8px 24px rgba(20,16,10,.10);z-index:40;transition:transform .3s cubic-bezier(.22,1,.36,1)}
-nav button{background:none;border:none;color:#9a9187;font-size:0;padding:6px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0;transition:color .18s;position:relative;border-radius:12px}
+/* ============ BOTTOM NAV — Stitch reference spec ============
+   Ink-black floating pill, icon-only, lime active accent + dot below,
+   lime center FAB with ink flame glyph. */
+nav{position:fixed;bottom:24px;left:24px;right:24px;max-width:380px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);background:var(--txt);border-radius:32px;padding:12px 8px;box-shadow:0 10px 30px rgba(20,20,20,.35);z-index:40;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+nav button{background:none;border:none;color:#8C8C86;font-size:0;padding:6px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0;transition:color .18s;position:relative;border-radius:12px}
 nav button .ic{width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:inherit}
 nav button .ic svg{width:23px;height:23px;stroke-width:1.5;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:all .2s cubic-bezier(.22,1,.36,1)}
-nav button.on{color:var(--orange)}
+nav button.on{color:var(--accent-bright)}
 nav button.on .ic svg{stroke-width:2;transform:scale(1.04)}
 /* active dot indicator BELOW the bar (reference: no pill highlight) */
-nav button.on::after{content:"";position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--orange);animation:dotIn .25s cubic-bezier(.22,1,.36,1)}
+nav button.on::after{content:"";position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--accent-bright);animation:dotIn .25s cubic-bezier(.22,1,.36,1)}
 @keyframes dotIn{from{transform:translateX(-50%) scale(0)}to{transform:translateX(-50%) scale(1)}}
 nav button:active{opacity:.55}
-/* center FAB — raised, orange, Blaze flame glyph */
-nav button.fab{color:#fff}
+/* center FAB — lime disc, ink flame glyph (reference: accent FAB) */
+nav button.fab{color:var(--txt)}
 nav button.fab .ic{width:auto;height:auto}
-nav button.fab .fabcircle{width:54px;height:54px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(255,107,0,.45),0 2px 6px rgba(255,107,0,.25);margin-top:-38px;border:3px solid #fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
+nav button.fab .fabcircle{width:54px;height:54px;border-radius:50%;background:var(--accent-bright);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(20,20,20,.3),0 2px 6px rgba(20,20,20,.18);margin-top:-38px;border:3px solid var(--bg);transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
 nav button.fab .fabcircle .ic{width:26px;height:26px}
-nav button.fab .fabcircle .ic svg{width:26px;height:26px;stroke-width:1.6;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round}
+nav button.fab .fabcircle .ic svg{width:26px;height:26px;stroke-width:1.6;stroke:var(--txt);fill:none;stroke-linecap:round;stroke-linejoin:round}
 nav button.fab.on .fabcircle{transform:scale(1.06)}
 nav button.fab:active .fabcircle{transform:scale(.92)}
 nav button.fab.on::after{display:none}
 
 /* Global buttons — solid orange, flat */
-.btn{background:var(--orange);color:#fff;border:none;border-radius:var(--btn-radius);padding:12px 18px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;box-shadow:0 4px 14px rgba(255,107,0,.3),inset 0 1px 0 rgba(255,255,255,.25)}
-.btn:active{background:#e85f00;transform:scale(0.97)}
+.btn{background:var(--txt);color:#fff;border:none;border-radius:var(--btn-radius);padding:13px 20px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;box-shadow:0 6px 18px rgba(20,20,20,.22)}
+.btn:active{background:#000;transform:scale(0.97)}
 .btn.ghost{background:var(--glass);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--glass-brd);color:var(--txt);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
 .btn.sm{padding:8px 14px;font-size:.78rem;border-radius:12px}
 
@@ -406,14 +411,9 @@ nav button.fab.on::after{display:none}
         <div class="macro-ring-box">
           <div class="ring">
             <svg width="112" height="112" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="7"/>
-              <circle id="calRing" cx="50" cy="50" r="42" fill="none" stroke="url(#orangeGrad)" stroke-width="7" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
-              <defs>
-                <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ff8533"/>
-                  <stop offset="100%" stop-color="#ff6b00"/>
-                </linearGradient>
-              </defs>
+              <circle cx="50" cy="50" r="42" fill="var(--txt)" stroke="var(--txt)" stroke-width="0"/>
+              <circle cx="50" cy="50" r="47" fill="none" stroke="var(--card3)" stroke-width="3"/>
+              <circle id="calRing" cx="50" cy="50" r="47" fill="none" stroke="var(--accent-bright)" stroke-width="3" stroke-linecap="round" stroke-dasharray="295.3" stroke-dashoffset="295.3"/>
             </svg>
             <div class="val">
               <span class="big" id="calLeftVal">1850</span>
@@ -957,7 +957,7 @@ function renderToday(){
   // Macro Card & Ring Bindings
   countTo(document.getElementById('calLeftVal'),calLeft);
   document.getElementById('energyFormula').textContent=`Goal ${calTgt.toLocaleString()} · Food ${calEaten.toLocaleString()} · Remaining ${calLeft.toLocaleString()}`;
-  document.getElementById('calRing').style.strokeDashoffset=263.9*(1-Math.min(1,calEaten/calTgt));
+  document.getElementById('calRing').style.strokeDashoffset=295.3*(1-Math.min(1,calEaten/calTgt));
   
   countTo(document.getElementById('pval'),p);
   document.getElementById('ptgt').textContent=tgt;
@@ -1645,13 +1645,13 @@ function renderStats(){
   const wv=days.map(d=>S.days[d]?.weight??null);
   const trend=movingAvg(wv,7);
   const tdee=estTDEE(days);
-  document.getElementById('wChart').innerHTML=chart('w',wv,'var(--orange)','',trend);
+  document.getElementById('wChart').innerHTML=chart('w',wv,'var(--accent)','',trend);
   const first=wv.find(v=>v!=null),last=[...wv].reverse().find(v=>v!=null);
   const wa0=S.profile.wa0,waNow=[...days].reverse().map(d=>S.days[d]?.waist??null).find(v=>v!=null);
   document.getElementById('wStats').innerHTML=(first&&last?'Logged '+first+' → '+last+' kg (<b style="color:'+(last<first?'var(--green)':'var(--red)')+'">'+(last-first).toFixed(1)+' kg</b>). Waist '+(wa0||'—')+' → '+(waNow||'—')+' cm. ':'')+
     (tdee?'<br><b style="color:var(--orange)">Estimated TDEE: ~'+tdee+' kcal/day</b> (from your logged intake + smoothed trend). Plan sits at '+S.profile.kcal+' — deficit ≈ '+(tdee-S.profile.kcal)+' kcal.':'');
   const wv2=days.map(d=>S.days[d]?.waist??null);
-  document.getElementById('waChart').innerHTML=chart('w',wv2,'var(--orange)',' cm');
+  document.getElementById('waChart').innerHTML=chart('w',wv2,'var(--accent)',' cm');
   const last14=[];for(let i=13;i>=0;i--)last14.push(addDays(tkey(),-i));
   document.getElementById('adhBars').innerHTML='<div style="display:flex;gap:4px;align-items:flex-end;height:72px;margin-top:4px">'+last14.map(d=>{
     const x=S.days[d];const score=x?[(x.protein>=S.profile.protein*0.95),(x.steps>=S.profile.steps),(x.sleep!=null&&x.sleep>=S.profile.sleep-0.5),(x.supps?.creatine),(x.weight!=null)].filter(Boolean).length:0;
