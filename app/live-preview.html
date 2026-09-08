@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live Preview — BODY OS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--fg:var(--foreground,#1a1410);--dim:var(--muted-foreground,#9a8f7a);--acc:var(--accent,#ff6b00);--bd:var(--border,rgba(20,16,10,.12))}
+  body{font-family:var(--font-family,-apple-system,'Segoe UI',sans-serif);color:var(--fg)}
+  .wrap{display:flex;gap:20px;align-items:flex-start;padding:10px 6px;flex-wrap:wrap}
+  /* device frame */
+  .phone{width:270px;border-radius:38px;background:#111;padding:9px;box-shadow:0 24px 64px rgba(0,0,0,.35),0 4px 16px rgba(0,0,0,.2);position:relative;flex-shrink:0}
+  .phone::after{content:"";position:absolute;top:16px;left:50%;transform:translateX(-50%);width:86px;height:22px;background:#111;border-radius:12px;z-index:3}
+  .screen{width:252px;height:520px;border-radius:30px;overflow:hidden;position:relative;background:#f6f1e7}
+  .screen iframe{width:390px;height:804px;border:0;transform:scale(.646);transform-origin:0 0;pointer-events:auto}
+  .reload-flash{position:absolute;inset:0;background:rgba(255,255,255,.5);opacity:0;transition:opacity .4s;pointer-events:none}
+  .reload-flash.on{opacity:1}
+  /* controls */
+  .panel{flex:1;min-width:210px;max-width:340px}
+  h2{font-size:15px;font-weight:700;letter-spacing:-.2px}
+  .sub{font-size:11.5px;color:var(--dim);margin:4px 0 14px;line-height:1.5}
+  .tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+  .tab{padding:6px 12px;border-radius:99px;border:1px solid var(--bd);background:transparent;color:var(--fg);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+  .tab.on{background:var(--acc);border-color:var(--acc);color:#fff}
+  .row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  button.act{padding:7px 14px;border-radius:10px;border:1px solid var(--bd);background:transparent;color:var(--fg);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+  button.act:hover{border-color:var(--acc)}
+  .live-dot{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#22c55e}
+  .live-dot::before{content:"";width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .url{font-size:10.5px;color:var(--dim);font-family:ui-monospace,monospace;margin-top:10px;word-break:break-all}
+  .note{font-size:11px;color:var(--dim);margin-top:14px;padding:9px 11px;border:1px solid var(--bd);border-radius:10px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="phone"><div class="screen"><div class="reload-flash" id="flash"></div><iframe id="frame" title="BODY OS live"></iframe></div></div>
+  <div class="panel">
+    <div class="live-dot" id="liveStat">LIVE</div>
+    <h2>BODY OS — live preview</h2>
+    <div class="sub">This is the real app at real 390×844 scale (scaled to fit), not a mockup. Switch tabs and interact — it's tap-through.</div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-tab="today">Today</button>
+      <button class="tab" data-tab="coach">Coach</button>
+      <button class="tab" data-tab="plan">Plan</button>
+      <button class="tab" data-tab="stats">Stats</button>
+      <button class="tab" data-tab="set">Settings</button>
+    </div>
+    <div class="row">
+      <button class="act" id="reload">↻ Reload</button>
+      <button class="act" id="demoData">Load demo data</button>
+      <button class="act" id="celebrate">🎉 Blaze celebrate</button>
+      <button class="act" id="fail">😞 Blaze fail</button>
+    </div>
+    <div class="url" id="srcUrl"></div>
+    <div class="note">The iframe is <b>interactive</b> — scroll, tap buttons, ask the coach. Blaze reacts inside the frame. The reload picks up the latest deployed code (~15s after a git push lands).</div>
+  </div>
+</div>
+<script>
+const QS=new URLSearchParams(location.search);
+const BASE=QS.get('base')||location.origin.replace(/\/$/,'');
+const frame=document.getElementById('frame');
+const src=tab=>BASE+'/index.html';
+let current=QS.get('tab')||'today';
+frame.src=src(current);
+document.getElementById('srcUrl').textContent=frame.src;
+const navInFrame=tab=>{try{frame.contentWindow.document.querySelector('nav button[data-s="'+tab+'"]')?.click();return true}catch(e){return false}};
+frame.onload=()=>{setTimeout(()=>{document.getElementById('flash').classList.remove('on');navInFrame(current)},250)};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');current=b.dataset.tab;
+  const f=document.getElementById('flash');f.classList.add('on');
+  if(!navInFrame(current)){frame.src=src(current)}
+  document.getElementById('srcUrl').textContent=frame.src;
+});
+document.getElementById('reload').onclick=()=>{const f=document.getElementById('flash');f.classList.add('on');frame.src=src(current);frame.onload=()=>setTimeout(()=>{f.classList.remove('on');navInFrame(current)},250)};
+/* run demo/mascot buttons INSIDE the iframe (same-origin) */
+const inFrame=fn=>{try{fn(frame.contentWindow)}catch(e){}};
+document.getElementById('demoData').onclick=()=>inFrame(w=>{w.document.getElementById('dDemo')?.click();w.renderToday&&w.renderToday()});
+document.getElementById('celebrate').onclick=()=>inFrame(w=>{w.document.querySelector('nav button[data-s="coach"]')?.click();w.blazeFSM&&w.blazeFSM.to('celebrate')});
+document.getElementById('fail').onclick=()=>inFrame(w=>{w.document.querySelector('nav button[data-s="coach"]')?.click();w.blazeFSM&&w.blazeFSM.to('fail')});
+/* auto-reload loop: every 20s if doc unseen-changed, refresh (live feel) */
+setInterval(()=>{frame.contentWindow?.location.reload()},45000);
+</script>
+</body>
+</html>
