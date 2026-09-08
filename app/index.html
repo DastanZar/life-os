@@ -59,7 +59,7 @@ header{position:sticky;top:0;z-index:30;background:var(--bg);padding:14px 18px 1
 .chip.fire{background:var(--orange-soft);border-color:rgba(255,107,0,0.3);color:var(--orange)}
 .chip.green{color:var(--green);background:var(--green-soft);border-color:#bbf7d0}
 
-main{padding:14px 16px calc(30px + 84px)}
+main{padding:14px 16px calc(30px + 108px)}
 /* Tab transitions: subtle horizontal slide, real-app feel */
 .screen{display:none;animation:tabIn .28s cubic-bezier(.22,1,.36,1)}
 .screen.on{display:block}
@@ -309,15 +309,28 @@ main > *:nth-child(8){animation-delay:420ms}
 .check-btn:active{transform:scale(0.88)}
 
 /* ============ BOTTOM NAV (iOS-style, real icons, real indicator) ============ */
-/* ============ GLASS MORPHISM SYSTEM ============ */
-/* Nav bar: floating glass pill, detached from screen edge */
-nav{position:fixed;bottom:10px;left:10px;right:10px;max-width:420px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);background:var(--glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-brd);border-radius:26px;padding:8px 8px 8px;box-shadow:0 8px 32px rgba(20,16,10,.18),inset 0 1px 0 rgba(255,255,255,.5);z-index:40}
-nav button{background:none;border:none;color:var(--txt2);font-size:.62rem;font-weight:600;letter-spacing:0;padding:6px 0 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;border-radius:14px}
-nav button .ic{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:inherit}
-nav button .ic svg{width:22px;height:22px;stroke-width:1.7;stroke:currentColor;fill:none;transition:all .2s cubic-bezier(.22,1,.36,1)}
+/* ============ BOTTOM NAV — reference-image spec ============
+   Opaque white floating pill, icon-only (no labels), 1.5px strokes,
+   active = color change + 6px dot BELOW the bar, raised center FAB. */
+nav{position:fixed;bottom:24px;left:24px;right:24px;max-width:380px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-radius:32px;padding:12px 8px;box-shadow:0 8px 24px rgba(20,16,10,.10);z-index:40;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+nav button{background:none;border:none;color:#9a9187;font-size:0;padding:6px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0;transition:color .18s;position:relative;border-radius:12px}
+nav button .ic{width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:inherit}
+nav button .ic svg{width:23px;height:23px;stroke-width:1.5;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:all .2s cubic-bezier(.22,1,.36,1)}
 nav button.on{color:var(--orange)}
-nav button.on .ic svg{stroke-width:2.2;transform:scale(1.05)}
+nav button.on .ic svg{stroke-width:2;transform:scale(1.04)}
+/* active dot indicator BELOW the bar (reference: no pill highlight) */
+nav button.on::after{content:"";position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--orange);animation:dotIn .25s cubic-bezier(.22,1,.36,1)}
+@keyframes dotIn{from{transform:translateX(-50%) scale(0)}to{transform:translateX(-50%) scale(1)}}
 nav button:active{opacity:.55}
+/* center FAB — raised, orange, Blaze flame glyph */
+nav button.fab{color:#fff}
+nav button.fab .ic{width:auto;height:auto}
+nav button.fab .fabcircle{width:54px;height:54px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(255,107,0,.45),0 2px 6px rgba(255,107,0,.25);margin-top:-38px;border:3px solid #fff;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
+nav button.fab .fabcircle .ic{width:26px;height:26px}
+nav button.fab .fabcircle .ic svg{width:26px;height:26px;stroke-width:1.6;stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round}
+nav button.fab.on .fabcircle{transform:scale(1.06)}
+nav button.fab:active .fabcircle{transform:scale(.92)}
+nav button.fab.on::after{display:none}
 
 /* Global buttons — solid orange, flat */
 .btn{background:var(--orange);color:#fff;border:none;border-radius:var(--btn-radius);padding:12px 18px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;box-shadow:0 4px 14px rgba(255,107,0,.3),inset 0 1px 0 rgba(255,255,255,.25)}
@@ -798,11 +811,11 @@ nav button:active{opacity:.55}
     </div>
     </div>
 <nav>
-  <button data-s="today" class="on"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Today</button>
-  <button data-s="coach"><span class="ic"><svg viewBox="0 0 24 24"><path d="M21 12c0 4.4-4 8-9 8-1.4 0-2.7-.3-3.9-.7L3 21l1.7-4.5C3.7 15 3 13.6 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"/></svg></span>Coach</button>
-  <button data-s="plan"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v4M16 4v4"/><circle cx="8" cy="15" r=".5" fill="currentColor"/><circle cx="12" cy="15" r=".5" fill="currentColor"/><circle cx="16" cy="13" r=".5" fill="currentColor"/></svg></span>Plan</button>
-  <button data-s="stats"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 20h18M5 17l4-5 3 2 4-7 3 5"/></svg></span>Stats</button>
-  <button data-s="set"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Set</button>
+  <button data-s="today" class="on" aria-label="Today"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 4v3M5.6 7.6l2.1 2.1M18.4 7.6l-2.1 2.1M7 15a5 5 0 0 1 10 0M3 18h18"/></svg></span></button>
+  <button data-s="plan" aria-label="Plan"><span class="ic"><svg viewBox="0 0 24 24"><path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h11A1.5 1.5 0 0 1 19 6.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 17.5ZM8 3.5v3M16 3.5v3M5 10h14M9 14h.01M12 14h.01M15 14h.01"/></svg></span></button>
+  <button data-s="coach" class="fab" aria-label="Coach"><span class="fabcircle"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3.5c3 3.4 5.5 5.2 5.5 8.7a5.5 5.5 0 0 1-11 0c0-3.5 2.5-5.3 5.5-8.7ZM12 10.5c1.2 1.7 2.5 2.4 2.5 4a2.5 2.5 0 1 1-5 0c0-1.6 1.3-2.3 2.5-4Z"/></svg></span></span></button>
+  <button data-s="stats" aria-label="Stats"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 16.5 8 11l3.5 3.5L18 7M14 7h4v4"/></svg></span></button>
+  <button data-s="set" aria-label="Settings"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h7M15 7h5M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="13" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg></span></button>
 </nav>
 <div class="toast" id="toast"></div>
 
