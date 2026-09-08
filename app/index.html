@@ -39,7 +39,8 @@
   --red:#dc2626;
   --red-soft:#fde7e7;
 
-  --card-radius:18px; --btn-radius:14px; --pill-radius:999px;
+  --card-radius:22px; --btn-radius:16px; --pill-radius:999px;
+  --glass:rgba(255,255,255,.55); --glass-strong:rgba(255,255,255,.72); --glass-brd:rgba(255,255,255,.65); --glass-blur:blur(18px) saturate(1.6);
   font-size:15px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -58,7 +59,7 @@ header{position:sticky;top:0;z-index:30;background:var(--bg);padding:14px 18px 1
 .chip.fire{background:var(--orange-soft);border-color:rgba(255,107,0,0.3);color:var(--orange)}
 .chip.green{color:var(--green);background:var(--green-soft);border-color:#bbf7d0}
 
-main{padding:14px 16px 24px}
+main{padding:14px 16px calc(30px + 84px)}
 /* Tab transitions: subtle horizontal slide, real-app feel */
 .screen{display:none;animation:tabIn .28s cubic-bezier(.22,1,.36,1)}
 .screen.on{display:block}
@@ -160,12 +161,47 @@ main > *:nth-child(8){animation-delay:420ms}
 .del-btn{background:none;border:none;color:var(--dim);font-size:1.1rem;padding:2px 6px;cursor:pointer;transition:color .12s}
 .del-btn:active{color:var(--red)}
 
-/* ============ COACH TAB (chat-first) ============ */
-.coach-hero{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 0 rgba(20,16,10,.04)}
+/* ============ BLAZE MASCOT ============ */
+.blaze{width:56px;height:56px;position:relative;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.blaze svg{width:100%;height:100%;overflow:visible}
+.blaze-body{fill:var(--orange);transform-origin:32px 50px;animation:blazeIdle 3.2s ease-in-out infinite}
+.blaze-inner{fill:#ffd166;transform-origin:32px 40px;animation:blazeInnerFlicker 2.1s ease-in-out infinite}
+.blaze-eyes .eye{animation:blazeBlink 4.5s infinite}
+.blaze-arm{transform-origin:24px 36px}
+.blaze-arm-r{transform-origin:40px 36px}
+.blaze-shadow{position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:34px;height:6px;border-radius:50%;background:rgba(20,16,10,.12);filter:blur(2px)}
+@keyframes blazeIdle{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.03) scaleX(.98)}}
+@keyframes blazeInnerFlicker{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes blazeBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+/* think: squint up, scratch head */
+.blaze.think .blaze-body{animation:blazeThinkWobble 1.6s ease-in-out infinite}
+.blaze.think .blaze-eyes{transform:translateY(-1.4px)}
+.blaze.think .blaze-mouth{d:path("M29.5 35.5 Q32 34 34.5 35.5")}
+.blaze.think .blaze-arm-r{animation:blazeChinScratch 1.6s ease-in-out infinite}
+@keyframes blazeThinkWobble{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+@keyframes blazeChinScratch{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-25deg) translateY(-3px)}}
+/* celebrate: bounce + arms up */
+.blaze.celebrate{animation:blazeBounce .55s cubic-bezier(.22,1,.36,1) 2}
+.blaze.celebrate .blaze-arm-l{animation:blazeArmUpL .55s cubic-bezier(.22,1,.36,1) 2}
+.blaze.celebrate .blaze-arm-r{animation:blazeArmUpR .55s cubic-bezier(.22,1,.36,1) 2}
+.blaze.celebrate .blaze-mouth{d:path("M28.5 34 Q32 38.5 35.5 34")}
+.blaze.celebrate .blaze-inner{animation:blazeInnerFlicker .7s ease-in-out infinite}
+@keyframes blazeBounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+@keyframes blazeArmUpL{0%,100%{transform:rotate(0deg)}50%{transform:rotate(35deg) translateY(-3px)}}
+@keyframes blazeArmUpR{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-35deg) translateY(-3px)}}
+@keyframes blazeTap{0%{transform:scale(1)}50%{transform:scale(1.15) rotate(-6deg)}100%{transform:scale(1)}}
+
+/* Blaze speech bubble */
+#blazeBubble{position:absolute;top:-14px;left:62px;max-width:210px;background:var(--txt);color:var(--bg2);font-size:.72rem;font-weight:600;padding:7px 11px;border-radius:14px 14px 14px 4px;opacity:0;transform:translateY(4px) scale(.92);transform-origin:bottom left;transition:all .25s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:5;box-shadow:0 4px 16px rgba(20,16,10,.2);white-space:normal;line-height:1.35}
+#blazeBubble.on{opacity:1;transform:translateY(0) scale(1)}
+#blazeBubble::after{content:"";position:absolute;bottom:6px;left:-5px;width:10px;height:10px;background:var(--txt);border-radius:2px;transform:rotate(45deg)}
+
+
+.coach-hero{background:var(--glass-strong);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-brd);border-radius:24px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 24px rgba(20,16,10,.08),inset 0 1px 0 rgba(255,255,255,.5)}
 .coach-hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .coach-greet{font-family:'Clash Display',system-ui,sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:-.3px;color:var(--txt);line-height:1.15}
 .coach-sub{font-size:.78rem;color:var(--txt2);margin-top:3px;font-weight:500;line-height:1.4}
-.coach-mood-pill{font-size:.66rem;font-weight:700;letter-spacing:.6px;padding:5px 10px;border-radius:99px;background:var(--orange-soft);color:var(--orange);text-transform:uppercase;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px}
+.coach-mood-pill{font-size:.66rem;font-weight:700;letter-spacing:.6px;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.5);color:var(--orange);text-transform:uppercase;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px;border:1px solid rgba(255,107,0,0.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
 .coach-mood-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--orange);display:inline-block}
 .coach-quick-stats{display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line-subtle)}
 .coach-quick-stats div{font-size:.68rem;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
@@ -175,7 +211,7 @@ main > *:nth-child(8){animation-delay:420ms}
 .coach-checkin{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-subtle)}
 .ci-label{font-size:.66rem;font-weight:700;letter-spacing:.6px;color:var(--dim);text-transform:uppercase}
 .ci-moods{display:flex;gap:6px;margin-top:7px}
-.ci-mood{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:7px 4px;font-size:.74rem;font-weight:600;color:var(--txt2);cursor:pointer;transition:all .12s}
+.ci-mood{flex:1;background:var(--glass);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--glass-brd);border-radius:14px;padding:7px 4px;font-size:.74rem;font-weight:600;color:var(--txt2);cursor:pointer;transition:all .12s;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
 .ci-mood:active{transform:scale(.94)}
 .ci-mood.sel{background:var(--orange-soft);border-color:rgba(255,107,0,0.35);color:var(--orange)}
 .ci-mood.done{opacity:.75;cursor:default}
@@ -203,11 +239,11 @@ main > *:nth-child(8){animation-delay:420ms}
 /* Prompt chips — horizontally scrollable, tappable */
 .chat-prompts{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .chat-prompts::-webkit-scrollbar{display:none}
-.prompt-chip{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-size:.76rem;font-weight:600;color:var(--txt);white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .12s}
+.prompt-chip{background:var(--glass);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--glass-brd);border-radius:99px;padding:7px 13px;font-size:.76rem;font-weight:600;color:var(--txt);white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .12s;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
 .prompt-chip:active{background:var(--orange-soft);border-color:rgba(255,107,0,0.3);color:var(--orange);transform:scale(0.96)}
 
 /* Composer — iMessage style, anchored above the bottom nav */
-.chat-composer{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 6px 6px 10px;margin-top:6px;box-shadow:0 2px 8px rgba(20,16,10,.05);transition:border-color .15s}
+.chat-composer{display:flex;align-items:center;gap:8px;background:var(--glass-strong);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-brd);border-radius:99px;padding:6px 6px 6px 12px;margin-top:6px;box-shadow:0 4px 20px rgba(20,16,10,.10),inset 0 1px 0 rgba(255,255,255,.5);transition:border-color .15s}
 .chat-composer:focus-within{border-color:rgba(255,107,0,0.4)}
 .chat-input{flex:1;background:transparent;border:none;outline:none;font-family:inherit;font-size:.92rem;color:var(--txt);padding:8px 4px;min-width:0}
 .chat-input::placeholder{color:var(--dim)}
@@ -259,8 +295,10 @@ main > *:nth-child(8){animation-delay:420ms}
 .check-btn:active{transform:scale(0.88)}
 
 /* ============ BOTTOM NAV (iOS-style, real icons, real indicator) ============ */
-nav{position:fixed;bottom:0;left:0;right:0;max-width:440px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:40}
-nav button{background:none;border:none;color:var(--dim);font-size:.62rem;font-weight:600;letter-spacing:0;padding:6px 0 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s}
+/* ============ GLASS MORPHISM SYSTEM ============ */
+/* Nav bar: floating glass pill, detached from screen edge */
+nav{position:fixed;bottom:10px;left:10px;right:10px;max-width:420px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);background:var(--glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-brd);border-radius:26px;padding:8px 8px 8px;box-shadow:0 8px 32px rgba(20,16,10,.18),inset 0 1px 0 rgba(255,255,255,.5);z-index:40}
+nav button{background:none;border:none;color:var(--txt2);font-size:.62rem;font-weight:600;letter-spacing:0;padding:6px 0 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;border-radius:14px}
 nav button .ic{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:inherit}
 nav button .ic svg{width:22px;height:22px;stroke-width:1.7;stroke:currentColor;fill:none;transition:all .2s cubic-bezier(.22,1,.36,1)}
 nav button.on{color:var(--orange)}
@@ -268,22 +306,22 @@ nav button.on .ic svg{stroke-width:2.2;transform:scale(1.05)}
 nav button:active{opacity:.55}
 
 /* Global buttons — solid orange, flat */
-.btn{background:var(--orange);color:#fff;border:none;border-radius:var(--btn-radius);padding:12px 18px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .12s}
+.btn{background:var(--orange);color:#fff;border:none;border-radius:var(--btn-radius);padding:12px 18px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;box-shadow:0 4px 14px rgba(255,107,0,.3),inset 0 1px 0 rgba(255,255,255,.25)}
 .btn:active{background:#e85f00;transform:scale(0.97)}
-.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
-.btn.sm{padding:8px 14px;font-size:.78rem;border-radius:10px}
+.btn.ghost{background:var(--glass);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--glass-brd);color:var(--txt);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.btn.sm{padding:8px 14px;font-size:.78rem;border-radius:12px}
 
 /* Bottom sheets */
 #pickOverlay{position:fixed;inset:0;background:rgba(20,16,10,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
 #pickOverlay.on{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s}
-#pickSheet{background:var(--bg);width:100%;max-width:440px;max-height:85vh;border-radius:20px 20px 0 0;padding:18px 20px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;box-shadow:0 -4px 24px rgba(20,16,10,.12);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
+#pickSheet{background:var(--glass-strong);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);width:100%;max-width:440px;max-height:85vh;border-radius:26px 26px 0 0;padding:18px 20px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;border:1px solid var(--glass-brd);border-bottom:none;box-shadow:0 -12px 48px rgba(20,16,10,.25);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
 #pickOverlay.on #pickSheet{transform:none}
 #pickList{scrollbar-width:none}
 #pickList::-webkit-scrollbar{display:none}
 
 #scanOverlay{position:fixed;inset:0;background:rgba(20,16,10,.5);z-index:60;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
 #scanOverlay.on{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s}
-#scanSheet{background:var(--bg);width:100%;max-width:440px;max-height:88vh;border-radius:20px 20px 0 0;padding:18px 20px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;box-shadow:0 -8px 32px rgba(20,16,10,.18);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
+#scanSheet{background:var(--glass-strong);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);width:100%;max-width:440px;max-height:88vh;border-radius:28px 28px 0 0;padding:18px 20px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;border:1px solid var(--glass-brd);border-bottom:none;box-shadow:0 -12px 48px rgba(20,16,10,.25);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
 #scanOverlay.on #scanSheet{transform:none}
 
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--txt);color:var(--card);box-shadow:0 8px 24px rgba(20,16,10,.2);font-weight:600;font-size:.78rem;padding:9px 18px;border-radius:999px;opacity:0;transition:opacity .2s,transform .25s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:50;white-space:nowrap}
@@ -548,9 +586,30 @@ nav button:active{opacity:.55}
     <!-- mood / context header -->
     <div class="coach-hero" id="coachMood">
       <div class="coach-hero-row">
-        <div>
-          <div class="coach-greet" id="coachGreet">—</div>
-          <div class="coach-sub" id="coachSub">—</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="blaze" id="blaze">
+            <svg viewBox="0 0 64 64" id="blazeSvg">
+              <!-- flame body -->
+              <path class="blaze-body" d="M32 6 C36 14 44 16 44 27 C44 34 40 38 38 41 C36 44 36 47 38 50 L26 50 C28 47 28 44 26 41 C24 38 20 34 20 27 C20 16 28 14 32 6 Z"/>
+              <!-- inner flame -->
+              <path class="blaze-inner" d="M32 22 C34 27 38 28 38 33 C38 37 35 40 32 40 C29 40 26 37 26 33 C26 28 30 27 32 22 Z"/>
+              <!-- eyes -->
+              <g class="blaze-eyes" id="blazeEyes">
+                <circle class="eye" cx="28.5" cy="29" r="1.8" fill="#3d2508"/>
+                <circle class="eye" cx="35.5" cy="29" r="1.8" fill="#3d2508"/>
+              </g>
+              <!-- mouth -->
+              <path class="blaze-mouth" id="blazeMouth" d="M29 34.5 Q32 36.5 35 34.5" stroke="#3d2508" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+              <!-- arms -->
+              <path class="blaze-arm blaze-arm-l" d="M24 36 Q19 37 17 40" stroke="#ff6b00" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path class="blaze-arm blaze-arm-r" d="M40 36 Q45 37 47 40" stroke="#ff6b00" stroke-width="3" fill="none" stroke-linecap="round"/>
+            </svg>
+            <div class="blaze-shadow"></div>
+          </div>
+          <div>
+            <div class="coach-greet" id="coachGreet">—</div>
+            <div class="coach-sub" id="coachSub">—</div>
+          </div>
         </div>
         <div class="coach-mood-pill" id="coachMoodPill">—</div>
       </div>
@@ -818,7 +877,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');document.getElementById('scr-'+b.dataset.s).classList.add('on');
-  if(b.dataset.s==='coach')renderCoach();
+  if(b.dataset.s==='coach'){renderCoach();blazeGreet();}
   if(b.dataset.s==='plan')renderPlan();
   if(b.dataset.s==='stats')renderStats();
   if(b.dataset.s==='set')renderSet();
@@ -1195,6 +1254,51 @@ function weeklyAvg(iso,endBack=0){
   const vals=[];for(let i=0;i<7;i++){const d=S.days[addDays(iso,-i-endBack)];if(d&&d.weight)vals.push(d.weight)}
   return vals.length>=3?vals.reduce((a,b)=>a+b)/vals.length:null;
 }
+/* ============ BLAZE MASCOT CONTROLLER ============ */
+let BLAZE_TIMER=null;
+function blazeState(st,dur){
+  const el=document.getElementById('blaze');if(!el)return;
+  el.classList.remove('think','celebrate');
+  if(BLAZE_TIMER){clearTimeout(BLAZE_TIMER);BLAZE_TIMER=null}
+  if(st)el.classList.add(st);
+  if(st&&dur)BLAZE_TIMER=setTimeout(()=>el.classList.remove(st),dur);
+}
+function blazeSay(msg,ms){
+  let b=document.getElementById('blazeBubble');
+  if(!b){b=document.createElement('div');b.id='blazeBubble';document.getElementById('coachMood').appendChild(b)}
+  b.textContent=msg;b.classList.add('on');
+  clearTimeout(blazeSay._t);blazeSay._t=setTimeout(()=>b.classList.remove('on'),ms||3600);
+}
+document.getElementById('blaze').addEventListener('click',()=>{
+  blazeState(null);void document.getElementById('blaze').offsetWidth;
+  const el=document.getElementById('blaze');
+  el.style.animation='blazeTap .4s cubic-bezier(.22,1,.36,1)';
+  setTimeout(()=>el.style.animation='',420);
+  haptic();
+  const LINES=[
+    'Stay hot, Dastan. 🔥',
+    'Protein first. Feelings second.',
+    'I counted: you\'re doing better than you think.',
+    'Waist over scale. Always.',
+    'A logged set beats a perfect one.',
+    'Deload weeks are where gains hide.',
+    'Don\'t poke the flame. Train it.',
+  ];
+  blazeSay(LINES[Math.floor(Math.random()*LINES.length)]);
+});
+/* after renderCoach stats are known: contextual greeting bubble */
+function blazeGreet(){
+  const iso=tkey(),d=D(iso),p=d.protein||0,tgt=S.profile.protein;
+  const st=streak();
+  let msg;
+  const ph=phaseOf(weekOf(iso));
+  if(ph==='DELOAD')msg='Deload week — I go half-intensity too. 🔥';
+  else if(st>=7)msg=`${st}-day streak. We\'re cooking. 🔥`;
+  else if(p>=tgt*.95)msg='Protein target hit. Flaming proud.';
+  else if(p>0)msg=`${tgt-p}g protein left today. Feed me.`;
+  else msg='New day. Log protein, then ask me anything.';
+  blazeSay(msg,5000);
+}
 function renderCoach(){
   const iso=tkey();
   const hr=new Date().getHours();
@@ -1265,16 +1369,18 @@ window.checkin=(mood)=>{
   const thread=document.getElementById('chatThread');
   thread.insertAdjacentHTML('beforeend',coachRow('coach',R[mood],'check-in'));
   thread.scrollTop=thread.scrollHeight;
+  blazeState('celebrate',1400);
   document.querySelectorAll('.ci-mood').forEach(b=>{b.classList.toggle('sel',b.dataset.m===mood);b.classList.add('done')});
   const sub=document.getElementById('coachSub');
   if(sub)sub.textContent=sub.textContent.replace(/ · feeling \w+/,'')+' · feeling '+mood;
 }
+const BLAZE_FACE='<svg viewBox="0 0 64 64"><path d="M32 6 C36 14 44 16 44 27 C44 34 40 38 38 41 C36 44 36 47 38 50 L26 50 C28 47 28 44 26 41 C24 38 20 34 20 27 C20 16 28 14 32 6 Z" fill="currentColor"/><path d="M32 22 C34 27 38 28 38 33 C38 37 35 40 32 40 C29 40 26 37 26 33 C26 28 30 27 32 22 Z" fill="#ffd166" opacity=".55"/><circle cx="28.5" cy="29" r="1.8" fill="#fff"/><circle cx="35.5" cy="29" r="1.8" fill="#fff"/></svg>';
 function coachRow(role,text,meta){
   if(!text)return '';
   const safe=String(text).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
   if(role==='user')return `<div class="chat-row user"><div class="chat-bubble">${safe}</div></div>`;
   const metaHtml=meta?`<span class="meta">${meta}</span>`:'';
-  return `<div class="chat-row coach"><div class="chat-avatar">B</div><div class="chat-bubble">${safe}${metaHtml}</div></div>`;
+  return `<div class="chat-row coach"><div class="chat-avatar">${BLAZE_FACE}</div><div class="chat-bubble">${safe}${metaHtml}</div></div>`;
 }
 document.getElementById('chatSend').onclick=()=>askCoach();
 document.getElementById('askIn').addEventListener('keydown',async e=>{
@@ -1293,8 +1399,9 @@ async function askCoach(){
   const thread=document.getElementById('chatThread');
   // append user + thinking placeholder, render
   const idx=conv.qa.length-1;
-  thread.insertAdjacentHTML('beforeend',coachRow('user',q)+`<div class="chat-row coach" id="thinkingRow"><div class="chat-avatar">B</div><div class="chat-bubble thinking"><span class="dots"><span></span><span></span><span></span></span></div></div>`);
+  thread.insertAdjacentHTML('beforeend',coachRow('user',q)+`<div class="chat-row coach" id="thinkingRow"><div class="chat-avatar">${BLAZE_FACE}</div><div class="chat-bubble thinking"><span class="dots"><span></span><span></span><span></span></span></div></div>`);
   thread.scrollTop=thread.scrollHeight;
+  blazeState('think');
   const d=D(iso);
   let diet='';try{const parts=[];for(const[mid,ml]of MEALS){const items=(d.meals&&d.meals[mid])||[];if(items.length)parts.push(ml+': '+items.map(f=>f.n).join(', '))}diet=parts.length?' | today\'s food: '+parts.join(' | '):' | today\'s food: nothing logged yet'}catch(_){}
   const stats=`protein ${d.protein||0}/${S.profile.protein}g, kcal ${d.kcal??'—'}, steps ${d.steps??'—'}, sleep ${d.sleep??'—'}h, week ${weekOf(iso)}, phase ${phaseOf(weekOf(iso))}, streak ${streak()}${diet}`;
@@ -1310,6 +1417,8 @@ async function askCoach(){
   conv.qa[idx].a=a;conv.qa[idx].model=model;conv.qa[idx].ts=Date.now();
   const row=document.getElementById('thinkingRow');if(row)row.outerHTML=coachRow('coach',a,model);
   thread.scrollTop=thread.scrollHeight;
+  blazeState(null); // back to idle
+  if(/good|great|hit|done|complete|streak/i.test(q))blazeState('celebrate',1200);
 }
 async function loadMemoryMap(){
   // not used on the new tab — left as a stub for compatibility
