@@ -56,7 +56,7 @@
 </div>
 <script>
 const QS=new URLSearchParams(location.search);
-const BASE=QS.get('base')||location.origin.replace(/\/$/,'');
+const BASE='https://signed-collectible-marine-browsing.trycloudflare.com';
 const frame=document.getElementById('frame');
 const src=tab=>BASE+'/index.html';
 let current=QS.get('tab')||'today';
